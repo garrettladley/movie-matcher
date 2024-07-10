@@ -1,0 +1,38 @@
+---
+name: CI
+
+on:
+  pull_request:
+    branches: [ "*" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+      - name: Lint Nix code
+        run: nix develop --impure -c alejandra -c .
+      - name: Lint Go code
+        run: nix develop --impure -c golangci-lint run ./...
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+      - name: Test Go code
+        run: nix develop --impure -c go test ./...
+...
