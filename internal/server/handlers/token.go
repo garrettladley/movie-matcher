@@ -9,18 +9,18 @@ import (
 	"github.com/google/uuid"
 )
 
-type forgotTokenResponse struct {
+type TokenResponse struct {
 	Token uuid.UUID `json:"token"`
 }
 
-func (s *Service) ForgotToken(c *fiber.Ctx) error {
+func (s *Service) Token(c *fiber.Ctx) error {
 	rawNUID := c.Params("nuid")
 	nuid, err := model.ParseNUID(rawNUID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString(fmt.Sprintf("invalid NUID %s", rawNUID))
 	}
 
-	token, err := s.storage.ForgotToken(c.UserContext(), *nuid)
+	token, err := s.storage.Token(c.UserContext(), *nuid)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(fmt.Sprintf("failed to get token %s", err))
 	}
@@ -28,7 +28,7 @@ func (s *Service) ForgotToken(c *fiber.Ctx) error {
 	return c.
 		Status(fiber.StatusOK).
 		JSON(
-			forgotTokenResponse{
+			TokenResponse{
 				Token: *token,
 			},
 		)

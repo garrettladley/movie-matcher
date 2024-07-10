@@ -42,3 +42,13 @@ type MoviePromptService interface {
 	Generate(movies []MovieID) Prompt // pass a subset of all available movies
 	Check(prompt Prompt, ranking Ranking) Score
 }
+
+type MoviePrompter struct{}
+
+func (m *MoviePrompter) Generate(movies []MovieID) Prompt {
+	return Prompt{}
+}
+
+func (m *MoviePrompter) Check(prompt Prompt, ranking Ranking) Score {
+	return Score{}
+}

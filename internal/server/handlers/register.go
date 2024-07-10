@@ -53,7 +53,7 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	}
 
 	return c.
-		Status(fiber.StatusOK).
+		Status(fiber.StatusCreated).
 		JSON(
 			registerResponse{
 				Token:  token,

@@ -14,8 +14,8 @@ import (
 
 type Storage interface {
 	Register(ctx context.Context, nuid model.NUID, name model.ApplicantName, token uuid.UUID, prompt model.Prompt, solution model.Ranking) error
-	ForgotToken(ctx context.Context, nuid model.NUID) (*uuid.UUID, error)
-	ForgotPrompt(ctx context.Context, token uuid.UUID) (*model.Prompt, error)
+	Token(ctx context.Context, nuid model.NUID) (*uuid.UUID, error)
+	Prompt(ctx context.Context, token uuid.UUID) (*model.Prompt, error)
 	Submit(ctx context.Context, token uuid.UUID, score model.Score) error
 }
 
@@ -51,7 +51,7 @@ func (db *DB) Register(ctx context.Context, nuid model.NUID, name model.Applican
 	return err
 }
 
-func (db *DB) ForgotToken(ctx context.Context, nuid model.NUID) (*uuid.UUID, error) {
+func (db *DB) Token(ctx context.Context, nuid model.NUID) (*uuid.UUID, error) {
 	var dbResult struct {
 		Token sql.NullString `db:"token"`
 	}
@@ -72,7 +72,7 @@ func (db *DB) ForgotToken(ctx context.Context, nuid model.NUID) (*uuid.UUID, err
 	return &token, nil
 }
 
-func (db *DB) ForgotPrompt(ctx context.Context, token uuid.UUID) (*model.Prompt, error) {
+func (db *DB) Prompt(ctx context.Context, token uuid.UUID) (*model.Prompt, error) {
 	var dbResult struct {
 		Prompt sql.NullString `db:"prompt"`
 	}
