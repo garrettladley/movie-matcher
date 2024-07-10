@@ -37,8 +37,8 @@ func NotFound(title string) APIError {
 	return NewAPIError(http.StatusNotFound, fmt.Errorf("%s not found", title))
 }
 
-func Conflict() APIError {
-	return NewAPIError(http.StatusConflict, errors.New("conflict"))
+func Conflict(title string, with string) APIError {
+	return NewAPIError(http.StatusConflict, fmt.Errorf("conflict: %s with %s already exists", title, with))
 }
 
 func InvalidRequestData(errors map[string]string) APIError {

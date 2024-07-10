@@ -37,7 +37,7 @@ func Setup(settings config.Settings) *fiber.App {
 	}))
 
 	service := handlers.NewService(
-		storage.NewDB(storage.CreatePostgresConnection(settings.Database)),
+		storage.NewPostgresDB(settings.Database),
 		&model.MoviePrompter{},
 	)
 
