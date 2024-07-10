@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
 
 	"movie-matcher/internal/model"
+	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -17,16 +19,16 @@ func (s *Service) Prompt(c *fiber.Ctx) error {
 	rawToken := c.Params("token")
 	token, err := uuid.Parse(rawToken)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString(fmt.Sprintf("invalid token %s", rawToken))
+		return utilities.BadRequest(fmt.Errorf("failed to parse token. got: %s", rawToken))
 	}
 
 	prompt, err := s.storage.Prompt(c.UserContext(), token)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(fmt.Sprintf("failed to get prompt %s", err))
+		return err
 	}
 
 	return c.
-		Status(fiber.StatusOK).
+		Status(http.StatusOK).
 		JSON(
 			PromptResponse{
 				Prompt: *prompt,

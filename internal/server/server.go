@@ -7,6 +7,7 @@ import (
 	"movie-matcher/internal/model"
 	"movie-matcher/internal/server/handlers"
 	"movie-matcher/internal/storage"
+	"movie-matcher/internal/utilities"
 
 	go_json "github.com/goccy/go-json"
 
@@ -20,8 +21,9 @@ import (
 
 func Setup(settings config.Settings) *fiber.App {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: go_json.Marshal,
-		JSONDecoder: go_json.Unmarshal,
+		JSONEncoder:  go_json.Marshal,
+		JSONDecoder:  go_json.Unmarshal,
+		ErrorHandler: utilities.ErrorHandler,
 	})
 
 	app.Use(recover.New())

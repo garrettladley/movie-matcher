@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"net/http"
 
 	"movie-matcher/internal/model"
 	"movie-matcher/internal/utilities"
@@ -23,17 +23,22 @@ type registerResponse struct {
 func (s *Service) Register(c *fiber.Ctx) error {
 	var registerRequestBody registerRequest
 	if err := c.BodyParser(&registerRequestBody); err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString(fmt.Sprintf("invalid request body %s", registerRequestBody))
+		return utilities.InvalidJSON(err)
 	}
 
+	errors := make(map[string]string)
 	nuid, err := model.ParseNUID(registerRequestBody.RawNUID)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString(fmt.Sprintf("invalid NUID %s", registerRequestBody.RawNUID))
+		errors["nuid"] = err.Error()
 	}
 
 	applicantName, err := model.ParseApplicantName(registerRequestBody.RawApplicantName)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString(fmt.Sprintf("invalid applicant name %s", registerRequestBody.RawApplicantName))
+		errors["name"] = err.Error()
+	}
+
+	if len(errors) > 0 {
+		return utilities.InvalidRequestData(errors)
 	}
 
 	token := uuid.New()
@@ -49,11 +54,11 @@ func (s *Service) Register(c *fiber.Ctx) error {
 		prompt,
 		solution,
 	); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(fmt.Sprintf("failed to register %s", err))
+		return err
 	}
 
 	return c.
-		Status(fiber.StatusCreated).
+		Status(http.StatusCreated).
 		JSON(
 			registerResponse{
 				Token:  token,
