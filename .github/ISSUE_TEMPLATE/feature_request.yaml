@@ -1,0 +1,24 @@
+---
+name: 🚀 Feature Request
+description: Suggest a feature, idea, or enhancement
+labels: [feature]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting a feature request! It helps make `pxl` better.
+
+  - type: textarea
+    attributes:
+      label: What problem would this feature solve?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What solution are you proposing?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What alternatives have you considered?
+...

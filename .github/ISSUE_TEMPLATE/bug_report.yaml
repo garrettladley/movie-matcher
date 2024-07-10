@@ -1,0 +1,41 @@
+---
+name: 🐛 Bug Report
+description: Report a bug that should be fixed
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting a bug report! It helps make `pxl` better.
+
+        Make sure you are using the latest version of `pxl`.
+        The bug you are experiencing may already have been fixed.
+
+        Please try to include as much information as possible!
+
+  - type: input
+    attributes:
+      label: What version of `pxl` are you using?
+  - type: textarea
+    attributes:
+      label: What is the expected behavior?
+      description: Please provide text instead of a screenshot.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What is the actual behavior?
+      description: Please provide text instead of a screenshot.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What steps will reproduce the bug?
+      description: Explain the steps and provide a code snippet that can reproduce it.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Is there anything else you think we should know?
+...
