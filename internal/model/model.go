@@ -20,9 +20,13 @@ type Person struct {
 
 type MovieID string // imdb id
 
-var AVAILABLE_MOVIES = [30]MovieID{
+var AVAILABLE_MOVIES = []MovieID{
 	// jackson select 10-15 imdb id
 	// g select 10-15
+}
+
+type Ranking struct {
+	Movies []MovieID `json:"movies"`
 }
 
 type Prompt struct {
@@ -34,7 +38,7 @@ type Score struct {
 	KendallTau int
 }
 
-type Service interface {
+type MoviePromptService interface {
 	Generate(movies []MovieID) Prompt // pass a subset of all available movies
-	Check(prompt Prompt, ranking []MovieID) Score
+	Check(prompt Prompt, ranking Ranking) Score
 }
