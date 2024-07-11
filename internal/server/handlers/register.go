@@ -42,7 +42,7 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	}
 
 	token := uuid.New()
-	prompt := s.moviePrompter.Generate(utilities.SelectRandom(model.AVAILABLE_MOVIES, 15))
+	prompt := s.moviePrompter.Generate(utilities.SelectRandom(model.Catalog, 15))
 	// MARK: @Jackson how to generate a solution?
 	solution := model.Ranking{Movies: prompt.Movies}
 
