@@ -2,34 +2,26 @@ package model
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 	"unicode/utf8"
 )
 
 type ApplicantName string
 
-var forbiddenCharacters = []rune{'/', '(', ')', '"', '<', '>', '\\', '{', '}'}
+const forbiddenCharacters string = "/()'\"<>\\{}"
 
 func ParseApplicantName(str string) (*ApplicantName, error) {
 	if strings.TrimSpace(str) == "" {
-		return nil, fmt.Errorf("name cannot be empty. got: %s", str)
+		return nil, fmt.Errorf("name cannot be empty. got: '%s'", str)
 	}
 
-	if utf8.RuneCountInString(str) > 256 {
-		return nil, fmt.Errorf("name is too long. got string of length: %d", len(str))
+	runeCountInString := utf8.RuneCountInString(str)
+	if runeCountInString < 2 || runeCountInString > 256 {
+		return nil, fmt.Errorf("name must be between 2 and 256 characters. got string of length: %d", runeCountInString)
 	}
 
-	containsForbiddenCharacters := false
-	for _, char := range str {
-		if slices.Contains(forbiddenCharacters, char) {
-			containsForbiddenCharacters = true
-			break
-		}
-	}
-
-	if containsForbiddenCharacters {
-		return nil, fmt.Errorf("name contains forbidden characters. got: %s", str)
+	if strings.Contains(str, forbiddenCharacters) {
+		return nil, fmt.Errorf("name contains forbidden characters. got: '%s'", str)
 	}
 
 	applicantName := ApplicantName(str)
