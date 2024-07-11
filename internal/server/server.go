@@ -4,6 +4,10 @@ import (
 	"net/http"
 
 	"movie-matcher/internal/config"
+	"movie-matcher/internal/model"
+	"movie-matcher/internal/server/handlers"
+	"movie-matcher/internal/storage"
+	"movie-matcher/internal/utilities"
 
 	go_json "github.com/goccy/go-json"
 
@@ -17,8 +21,9 @@ import (
 
 func Setup(settings config.Settings) *fiber.App {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: go_json.Marshal,
-		JSONDecoder: go_json.Unmarshal,
+		JSONEncoder:  go_json.Marshal,
+		JSONDecoder:  go_json.Unmarshal,
+		ErrorHandler: utilities.ErrorHandler,
 	})
 
 	app.Use(recover.New())
@@ -31,18 +36,26 @@ func Setup(settings config.Settings) *fiber.App {
 		Level: compress.LevelBestSpeed,
 	}))
 
-	routes(app)
+	service := handlers.NewService(
+		storage.NewPostgresDB(settings.Database),
+		&model.MoviePrompter{},
+	)
 
-	utility(app)
+	app.Route("/",
+		func(r fiber.Router) {
+			r.Get("health", func(c *fiber.Ctx) error {
+				return c.SendStatus(http.StatusOK)
+			})
+			r.Post("register", service.Register)
+			r.Route(":nuid", func(r fiber.Router) {
+				r.Get("token", service.Token)
+			})
+			r.Route(":token", func(r fiber.Router) {
+				r.Get("prompt", service.Prompt)
+				r.Post("submit", service.Submit)
+			})
+		},
+	)
 
 	return app
-}
-
-func routes(app *fiber.App) {
-}
-
-func utility(app *fiber.App) {
-	app.Get("/health", func(c *fiber.Ctx) error {
-		return c.SendStatus(http.StatusOK)
-	})
 }

@@ -25,19 +25,19 @@ services:
         value: ${movie.USERNAME}
       - key: APP_DATABASE__PASSWORD
         scope: RUN_TIME
-        value: ${movie.PASSWORD}
+        value: ${moviematcher.PASSWORD}
       - key: APP_DATABASE__HOST
         scope: RUN_TIME
-        value: ${movie.HOSTNAME}
+        value: ${moviematcher.HOSTNAME}
       - key: APP_DATABASE__PORT
         scope: RUN_TIME
-        value: ${movie.PORT}
+        value: ${moviematcher.PORT}
       - key: APP_DATABASE__DATABASE_NAME
         scope: RUN_TIME
-        value: ${movie.DATABASE}
+        value: ${moviematcher.DATABASE}
 databases:
   - engine: PG
-    name: movie-matcher
+    name: moviematcher
     num_nodes: 1
     size: db-s-dev-database
     version: "12"

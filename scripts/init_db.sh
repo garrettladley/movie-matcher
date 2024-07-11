@@ -17,7 +17,7 @@ fi
 
 DB_USER="${POSTGRES_USER:=postgres}"
 DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
-DB_NAME="${POSTGRES_DB:=movie-matcher}"
+DB_NAME="${POSTGRES_DB:=moviematcher}"
 DB_PORT="${POSTGRES_PORT:=5432}"
 DB_HOST="${POSTGRES_HOST:=127.0.0.1}"
 

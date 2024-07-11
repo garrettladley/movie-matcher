@@ -1,11 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 
 	"movie-matcher/internal/config"
@@ -21,7 +21,7 @@ func main() {
 	app := server.Setup(*settings)
 
 	go func() {
-		if err := app.Listen(strconv.Itoa(int(settings.Application.Port))); err != nil {
+		if err := app.Listen(fmt.Sprintf(":%d", settings.Application.Port)); err != nil {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()

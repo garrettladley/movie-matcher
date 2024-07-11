@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
 
 	"movie-matcher/internal/model"
+	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -13,24 +15,23 @@ type submitRequestBody model.Ranking
 
 func (s *Service) Submit(c *fiber.Ctx) error {
 	rawToken := c.Params("token")
-
 	token, err := uuid.Parse(rawToken)
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("invalid token %s", rawToken))
+		return utilities.BadRequest(fmt.Errorf("failed to parse token. got: %s", rawToken))
 	}
 
 	var submitRequestBody submitRequestBody
 	if err := c.BodyParser(&submitRequestBody); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("invalid request body %s", submitRequestBody))
+		return utilities.InvalidJSON(err)
 	}
 
 	// MARK: @Jackson how to score a submission?
 	score := model.Score{}
 	if err := s.storage.Submit(c.UserContext(), token, score); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("failed to submit %s", err))
+		return err
 	}
 
 	return c.
-		Status(fiber.StatusOK).
+		Status(http.StatusCreated).
 		JSON(score)
 }
