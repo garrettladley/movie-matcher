@@ -3,7 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"movie-matcher/internal/model"
+	"movie-matcher/internal/algo"
+	"movie-matcher/internal/applicant"
+	"movie-matcher/internal/movie"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,8 +18,8 @@ type registerRequest struct {
 }
 
 type registerResponse struct {
-	Token  uuid.UUID    `json:"token"`
-	Prompt model.Prompt `json:"prompt"`
+	Token  uuid.UUID   `json:"token"`
+	Prompt algo.Prompt `json:"prompt"`
 }
 
 func (s *Service) Register(c *fiber.Ctx) error {
@@ -27,12 +29,12 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	}
 
 	errors := make(map[string]string)
-	nuid, err := model.ParseNUID(registerRequestBody.RawNUID)
+	nuid, err := applicant.ParseNUID(registerRequestBody.RawNUID)
 	if err != nil {
 		errors["nuid"] = err.Error()
 	}
 
-	applicantName, err := model.ParseApplicantName(registerRequestBody.RawApplicantName)
+	applicantName, err := applicant.ParseApplicantName(registerRequestBody.RawApplicantName)
 	if err != nil {
 		errors["name"] = err.Error()
 	}
@@ -42,13 +44,13 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	}
 
 	token := uuid.New()
-	prompt := s.moviePrompter.Generate(utilities.SelectRandom(model.Catalog, 15))
+	prompt := s.moviePrompter.Generate(utilities.SelectRandom(movie.Catalog, 15))
 	// MARK: @Jackson how to generate a solution?
-	solution := model.Ranking{Movies: prompt.Movies}
+	solution := algo.Ranking{Movies: prompt.Movies}
 
 	if err := s.storage.Register(
 		c.UserContext(),
-		*nuid,
+		nuid,
 		*applicantName,
 		token,
 		prompt,

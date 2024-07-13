@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for submitting a feature request! It helps make `pxl` better.
+        Thank you for submitting a feature request!
 
   - type: textarea
     attributes:

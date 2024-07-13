@@ -2,4 +2,9 @@
 .devenv/
 .direnv/
 .pre-commit-config.yaml
+
+# executable binaries
 bin/
+
+# ENV files
+.env

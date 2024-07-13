@@ -1,12 +1,14 @@
-package model
+package movie
 
-import "time"
+import (
+	"time"
+)
 
 var Catalog = []Movie{
 	// whiplash
 	NewMovieBuilder().
 		ID("tt2582802").
-		Runtime(106 * time.Minute).
+		Runtime(time.Duration(106) * time.Minute).
 		Languages([]Language{LanguageEnglish}).
 		Actors([]string{"Miles Teller", "J.K. Simmons", "Melissa Benoist"}).
 		RottenTomatoes(94).
@@ -17,7 +19,7 @@ var Catalog = []Movie{
 	// dune 2
 	NewMovieBuilder().
 		ID("tt15239678").
-		Runtime(166 * time.Minute).
+		Runtime(time.Duration(166) * time.Minute).
 		Languages([]Language{LanguageEnglish}).
 		Actors([]string{"Timothée Chalamet", "Zendaya", "Rebecca Ferguson"}).
 		RottenTomatoes(92).
@@ -28,7 +30,7 @@ var Catalog = []Movie{
 	// lalaland
 	NewMovieBuilder().
 		ID("tt3783958").
-		Runtime(128 * time.Minute).
+		Runtime(time.Duration(128) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageCantonese}).
 		Actors([]string{"Ryan Gosling", "Emma Stone", "Rosemarie DeWitt"}).
 		RottenTomatoes(91).
@@ -39,7 +41,7 @@ var Catalog = []Movie{
 	// the lego movie
 	NewMovieBuilder().
 		ID("tt1490017").
-		Runtime(100 * time.Minute).
+		Runtime(time.Duration(100) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageTurkish}).
 		Actors([]string{"Chris Pratt", "Will Ferrell", "Elizabeth Banks"}).
 		RottenTomatoes(96).
@@ -50,7 +52,7 @@ var Catalog = []Movie{
 	// 2001: a space odyssey
 	NewMovieBuilder().
 		ID("tt0062622").
-		Runtime(149 * time.Minute).
+		Runtime(time.Duration(149) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageRussian, LanguageFrench}).
 		Actors([]string{"Keir Dullea", "Gary Lockwood", "William Sylvester"}).
 		RottenTomatoes(92).
@@ -61,7 +63,7 @@ var Catalog = []Movie{
 	// inside out 2
 	NewMovieBuilder().
 		ID("tt22022452").
-		Runtime(95 * time.Minute).
+		Runtime(time.Duration(95) * time.Minute).
 		Languages([]Language{LanguageEnglish}).
 		Actors([]string{"Amy Poehler", "Maya Hawke", "Kensington Tallman"}).
 		RottenTomatoes(92).
@@ -72,7 +74,7 @@ var Catalog = []Movie{
 	// the grand budapest hotel
 	NewMovieBuilder().
 		ID("tt2278388").
-		Runtime(99 * time.Minute).
+		Runtime(time.Duration(99) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageFrench, LanguageGerman}).
 		Actors([]string{"Ralph Fiennes", "F. Murray Abraham", "Mathieu Amalric"}).
 		RottenTomatoes(92).
@@ -83,7 +85,7 @@ var Catalog = []Movie{
 	// the imitation game
 	NewMovieBuilder().
 		ID("tt2084970").
-		Runtime(114 * time.Minute).
+		Runtime(time.Duration(114) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageGerman}).
 		Actors([]string{"Benedict Cumberbatch", "Keira Knightley", "Matthew Goode"}).
 		RottenTomatoes(90).
@@ -94,7 +96,7 @@ var Catalog = []Movie{
 	// apollo 13
 	NewMovieBuilder().
 		ID("tt0112384").
-		Runtime(140 * time.Minute).
+		Runtime(time.Duration(140) * time.Minute).
 		Languages([]Language{LanguageEnglish}).
 		Actors([]string{"Tom Hanks", "Bill Paxton", "Kevin Bacon"}).
 		RottenTomatoes(96).
@@ -105,7 +107,7 @@ var Catalog = []Movie{
 	// catch me if you can
 	NewMovieBuilder().
 		ID("tt0264464").
-		Runtime(141 * time.Minute).
+		Runtime(time.Duration(141) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageFrench}).
 		Actors([]string{"Leonardo DiCaprio", "Tom Hanks", "Christopher Walken"}).
 		RottenTomatoes(96).
@@ -116,18 +118,18 @@ var Catalog = []Movie{
 	// the fantastic mr. fox
 	NewMovieBuilder().
 		ID("tt0432283").
-		Runtime(87 * time.Minute).
+		Runtime(time.Duration(87) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageFrench}).
 		Actors([]string{"George Clooney", "Meryl Streep", "Bill Murray"}).
 		RottenTomatoes(93).
 		Year(2009).
-		Rating(RatingNA).
+		Rating(RatingPG).
 		Build(),
 
 	// the minions movie
 	NewMovieBuilder().
 		ID("tt2293640").
-		Runtime(91 * time.Minute).
+		Runtime(time.Duration(91) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageSpanish, LanguageItalian}).
 		Actors([]string{"Sandra Bullock", "Jon Hamm", "Michael Keaton"}).
 		RottenTomatoes(56).
@@ -138,18 +140,17 @@ var Catalog = []Movie{
 	// goldfinger
 	NewMovieBuilder().
 		ID("tt0058150").
-		Runtime(110 * time.Minute).
+		Runtime(time.Duration(110) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageChinese, LanguageSpanish}).
 		Actors([]string{"Sean Connery", "Gert Frobe", "Honor Blackman"}).
 		RottenTomatoes(99).
 		Year(1964).
-		Rating(RatingApproved).
 		Build(),
 
 	// skyfall
 	NewMovieBuilder().
 		ID("tt1074638").
-		Runtime(143 * time.Minute).
+		Runtime(time.Duration(143) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageTurkish, LanguageShanghainese, LanguagePortuguese, LanguageJapanese}).
 		Actors([]string{"Daniel Craig", "Javier Bardem", "Naomie Harris"}).
 		RottenTomatoes(92).
@@ -160,7 +161,7 @@ var Catalog = []Movie{
 	// the social network
 	NewMovieBuilder().
 		ID("tt1285016").
-		Runtime(120 * time.Minute).
+		Runtime(time.Duration(120) * time.Minute).
 		Languages([]Language{LanguageEnglish, LanguageFrench}).
 		Actors([]string{"Jesse Eisenberg", "Andrew Garfield", "Justin Timberlake"}).
 		RottenTomatoes(96).

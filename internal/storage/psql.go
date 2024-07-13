@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 
+	"movie-matcher/internal/algo"
+	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/config"
-	"movie-matcher/internal/model"
 	"movie-matcher/internal/utilities"
 
 	"github.com/google/uuid"
@@ -23,7 +24,7 @@ func NewPostgresDB(settings config.DatabaseSettings) *PostgresDB {
 	return &PostgresDB{sqlx.MustConnect("postgres", settings.WithDb())}
 }
 
-func (db *PostgresDB) Register(ctx context.Context, nuid model.NUID, name model.ApplicantName, token uuid.UUID, prompt model.Prompt, solution model.Ranking) error {
+func (db *PostgresDB) Register(ctx context.Context, nuid applicant.NUID, name applicant.ApplicantName, token uuid.UUID, prompt algo.Prompt, solution algo.Ranking) error {
 	marshalledPrompt, err := go_json.Marshal(prompt)
 	if err != nil {
 		return err
@@ -53,7 +54,7 @@ func (db *PostgresDB) Register(ctx context.Context, nuid model.NUID, name model.
 	return nil
 }
 
-func (db *PostgresDB) Token(ctx context.Context, nuid model.NUID) (*uuid.UUID, error) {
+func (db *PostgresDB) Token(ctx context.Context, nuid applicant.NUID) (*uuid.UUID, error) {
 	var dbResult struct {
 		Token sql.NullString `db:"token"`
 	}
@@ -74,7 +75,7 @@ func (db *PostgresDB) Token(ctx context.Context, nuid model.NUID) (*uuid.UUID, e
 	return &token, nil
 }
 
-func (db *PostgresDB) Prompt(ctx context.Context, token uuid.UUID) (*model.Prompt, error) {
+func (db *PostgresDB) Prompt(ctx context.Context, token uuid.UUID) (*algo.Prompt, error) {
 	var dbResult struct {
 		Prompt sql.NullString `db:"prompt"`
 	}
@@ -92,7 +93,7 @@ func (db *PostgresDB) Prompt(ctx context.Context, token uuid.UUID) (*model.Promp
 		return nil, utilities.NotFound("prompt")
 	}
 
-	var prompt model.Prompt
+	var prompt algo.Prompt
 	if err := go_json.Unmarshal([]byte(dbResult.Prompt.String), &prompt); err != nil {
 		return nil, err
 	}
@@ -100,7 +101,7 @@ func (db *PostgresDB) Prompt(ctx context.Context, token uuid.UUID) (*model.Promp
 	return &prompt, nil
 }
 
-func (db *PostgresDB) Submit(ctx context.Context, token uuid.UUID, score model.Score) error {
+func (db *PostgresDB) Submit(ctx context.Context, token uuid.UUID, score algo.Score) error {
 	marshalledScore, err := go_json.Marshal(score)
 	if err != nil {
 		return err

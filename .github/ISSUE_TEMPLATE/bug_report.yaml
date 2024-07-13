@@ -6,16 +6,16 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for submitting a bug report! It helps make `pxl` better.
+        Thank you for submitting a bug report!
 
-        Make sure you are using the latest version of `pxl`.
+        Make sure you are using the latest version.
         The bug you are experiencing may already have been fixed.
 
         Please try to include as much information as possible!
 
   - type: input
     attributes:
-      label: What version of `pxl` are you using?
+      label: What version are you using?
   - type: textarea
     attributes:
       label: What is the expected behavior?
