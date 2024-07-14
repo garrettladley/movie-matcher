@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"movie-matcher/internal/services/omdb"
+
+	go_json "github.com/goccy/go-json"
 
 	"github.com/alecthomas/kong"
 )
@@ -34,7 +35,7 @@ func (cmd *FindCmd) Run() error {
 		return err
 	}
 
-	data, err := json.Marshal(movie)
+	data, err := go_json.Marshal(movie)
 	if err != nil {
 		return nil
 	}

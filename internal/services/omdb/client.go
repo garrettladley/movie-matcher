@@ -2,11 +2,12 @@ package omdb
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	go_json "github.com/goccy/go-json"
 )
 
 type apiClient struct {
@@ -36,7 +37,7 @@ func (c *apiClient) query(ctx context.Context, params params) (result, error) {
 	}
 
 	var res result
-	if err := json.NewDecoder(response.Body).Decode(&res); err != nil {
+	if err := go_json.NewDecoder(response.Body).Decode(&res); err != nil {
 		return result{}, fmt.Errorf("failed to decode result: %w", err)
 	}
 	if res.Response == "False" {

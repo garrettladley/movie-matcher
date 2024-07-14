@@ -1,21 +1,22 @@
 package duration
 
 import (
-	"encoding/json"
 	"errors"
 	"time"
+
+	go_json "github.com/goccy/go-json"
 )
 
 // A Duration is a wrapper around time.Duration that provides JSON marshalling and unmarshalling.
 type Duration time.Duration
 
 func (d Duration) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Duration(d).String())
+	return go_json.Marshal(time.Duration(d).String())
 }
 
 func (d *Duration) UnmarshalJSON(b []byte) error {
 	var v interface{}
-	if err := json.Unmarshal(b, &v); err != nil {
+	if err := go_json.Unmarshal(b, &v); err != nil {
 		return err
 	}
 	switch value := v.(type) {

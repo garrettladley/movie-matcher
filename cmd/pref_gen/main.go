@@ -1,11 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"movie-matcher/internal/services/pref_gen"
 	"time"
+
+	go_json "github.com/goccy/go-json"
 
 	"github.com/alecthomas/kong"
 )
@@ -21,7 +22,7 @@ type GenerateCmd struct {
 func (cmd *GenerateCmd) Run() error {
 	people := pref_gen.GeneratePeople(rand.New(rand.NewSource(time.Now().UnixNano())), cmd.Count)
 	for _, person := range people {
-		data, err := json.Marshal(person)
+		data, err := go_json.Marshal(person)
 		if err != nil {
 			return err
 		}

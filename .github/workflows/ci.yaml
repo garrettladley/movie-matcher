@@ -24,7 +24,7 @@ jobs:
       - name: Lint Nix code
         run: nix develop --impure -c alejandra -c .
       - name: Lint Go code
-        run: nix develop --impure -c golangci-lint run ./...
+        run: nix develop --impure -c golangci-lint run ./... --timeout=5m
   test:
     name: Test
     runs-on: ubuntu-latest
