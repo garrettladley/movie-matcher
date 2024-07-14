@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"movie-matcher/internal/model"
+	"movie-matcher/internal/algo"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,7 +12,7 @@ import (
 )
 
 type PromptResponse struct {
-	Prompt model.Prompt `json:"prompt"`
+	Prompt algo.Prompt `json:"prompt"`
 }
 
 func (s *Service) Prompt(c *fiber.Ctx) error {

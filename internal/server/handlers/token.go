@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"movie-matcher/internal/model"
+	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,12 +17,12 @@ type TokenResponse struct {
 
 func (s *Service) Token(c *fiber.Ctx) error {
 	rawNUID := c.Params("nuid")
-	nuid, err := model.ParseNUID(rawNUID)
+	nuid, err := applicant.ParseNUID(rawNUID)
 	if err != nil {
 		return utilities.BadRequest(fmt.Errorf("failed to parse nuid. got: %s", rawNUID))
 	}
 
-	token, err := s.storage.Token(c.UserContext(), *nuid)
+	token, err := s.storage.Token(c.UserContext(), nuid)
 	if err != nil {
 		return err
 	}

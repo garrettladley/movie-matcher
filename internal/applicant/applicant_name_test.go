@@ -1,6 +1,7 @@
-package model
+package applicant_test
 
 import (
+	"movie-matcher/internal/applicant"
 	"strings"
 	"testing"
 )
@@ -39,7 +40,7 @@ func TestParseApplicantNameErrors(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			_, err := ParseApplicantName(test.input)
+			_, err := applicant.ParseApplicantName(test.input)
 			if err == nil {
 				t.Fatalf("expected error to be %s, got nil", test.errorMessage)
 			}

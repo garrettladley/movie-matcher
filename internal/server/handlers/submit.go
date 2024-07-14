@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"movie-matcher/internal/model"
+	"movie-matcher/internal/algo"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
-type submitRequestBody model.Ranking
+type submitRequestBody algo.Ranking
 
 func (s *Service) Submit(c *fiber.Ctx) error {
 	rawToken := c.Params("token")
@@ -26,7 +26,7 @@ func (s *Service) Submit(c *fiber.Ctx) error {
 	}
 
 	// MARK: @Jackson how to score a submission?
-	score := model.Score{}
+	score := algo.Score{}
 	if err := s.storage.Submit(c.UserContext(), token, score); err != nil {
 		return err
 	}

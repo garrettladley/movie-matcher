@@ -1,4 +1,4 @@
-package model
+package movie
 
 type Language string
 
