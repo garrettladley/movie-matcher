@@ -1,18 +1,15 @@
 package handlers
 
 import (
-	"movie-matcher/internal/algo"
 	"movie-matcher/internal/storage"
 )
 
 type Service struct {
-	storage       storage.Storage
-	moviePrompter algo.MoviePromptService
+	storage storage.Storage
 }
 
-func NewService(storage storage.Storage, moviePrompter algo.MoviePromptService) *Service {
+func NewService(storage storage.Storage) *Service {
 	return &Service{
-		storage:       storage,
-		moviePrompter: moviePrompter,
+		storage: storage,
 	}
 }

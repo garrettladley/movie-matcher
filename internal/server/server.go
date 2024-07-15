@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 
-	"movie-matcher/internal/algo"
 	"movie-matcher/internal/config"
 	"movie-matcher/internal/server/handlers"
 	"movie-matcher/internal/storage"
@@ -38,7 +37,6 @@ func Setup(settings config.Settings) *fiber.App {
 
 	service := handlers.NewService(
 		storage.NewPostgresDB(settings.Database),
-		&algo.MoviePrompter{},
 	)
 
 	app.Route("/",

@@ -70,5 +70,5 @@ type preferences struct {
 	LeastFavoriteDirector      *preference[string]            `json:"leastFavoriteDirector,omitempty"`
 	FavoriteActors             *preference[[]string]          `json:"favoriteActors,omitempty"`
 	FavoritePlotElements       *preference[[]string]          `json:"favoritePlotElements,omitempty"`
-	MinimumRottenTomatoesScore *preference[uint]              `json:"minimumRottenTomatoesScore,omitempty"`
+	MinimumRottenTomatoesScore *preference[uint]              `json:"minimumRottenTomatoesScore(inclusive),omitempty"`
 }

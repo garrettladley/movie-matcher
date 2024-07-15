@@ -7,6 +7,8 @@ import (
 	"movie-matcher/internal/algo"
 	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/config"
+	"movie-matcher/internal/movie"
+	"movie-matcher/internal/set"
 	"movie-matcher/internal/utilities"
 
 	"github.com/google/uuid"
@@ -24,7 +26,7 @@ func NewPostgresDB(settings config.DatabaseSettings) *PostgresDB {
 	return &PostgresDB{sqlx.MustConnect("postgres", settings.WithDb())}
 }
 
-func (db *PostgresDB) Register(ctx context.Context, nuid applicant.NUID, name applicant.ApplicantName, token uuid.UUID, prompt algo.Prompt, solution algo.Ranking) error {
+func (db *PostgresDB) Register(ctx context.Context, nuid applicant.NUID, name applicant.ApplicantName, token uuid.UUID, prompt algo.Prompt, solution set.OrderedSet[movie.ID]) error {
 	marshalledPrompt, err := go_json.Marshal(prompt)
 	if err != nil {
 		return err
@@ -101,7 +103,7 @@ func (db *PostgresDB) Prompt(ctx context.Context, token uuid.UUID) (*algo.Prompt
 	return &prompt, nil
 }
 
-func (db *PostgresDB) Submit(ctx context.Context, token uuid.UUID, score algo.Score) error {
+func (db *PostgresDB) Submit(ctx context.Context, token uuid.UUID, score uint) error {
 	marshalledScore, err := go_json.Marshal(score)
 	if err != nil {
 		return err
