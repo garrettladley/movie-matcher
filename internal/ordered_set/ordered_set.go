@@ -1,4 +1,4 @@
-package set
+package ordered_set
 
 import (
 	"slices"
@@ -12,11 +12,11 @@ type OrderedSet[T comparable] struct {
 }
 
 // Creates a new OrderedSet from the provided elements by removing all duplicates. Order is preserved.
-func NewOrderedSet[T comparable](elems ...T) OrderedSet[T] {
+func New[T comparable](elems ...T) OrderedSet[T] {
 	return OrderedSet[T]{elems: dedupe(elems)}
 }
 
-// Creates a slice from an OrderedSet. Order is preserved.
+// Creates a slice from an Orderedordered_set. Order is preserved.
 func (s OrderedSet[T]) Slice() []T {
 	return append([]T{}, s.elems...)
 }
@@ -30,12 +30,12 @@ func (s *OrderedSet[T]) UnmarshalJSON(b []byte) error {
 	if err := go_json.Unmarshal(b, &v); err != nil {
 		return err
 	}
-	*s = NewOrderedSet(v...)
+	*s = New(v...)
 	return nil
 }
 
 // Computes the distance between two OrderedSets, which is the sum of each element's distance.
-// A single element's distance is the difference between its positions in each set.
+// A single element's distance is the difference between its positions in each ordered_set.
 // A set distance of 0 indicates that the sets are identical.
 // Panics if the provided sets do not have the same lengths or the same elements.
 func Distance[T comparable](s1 OrderedSet[T], s2 OrderedSet[T]) int {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"movie-matcher/internal/movie"
-	"movie-matcher/internal/set"
+	"movie-matcher/internal/ordered_set"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -33,7 +33,7 @@ func (s *Service) Submit(c *fiber.Ctx) error {
 		return err
 	}
 
-	score, err := s.algo.Check(c.UserContext(), *prompt, set.NewOrderedSet(submitRequestBody...))
+	score, err := s.algo.Check(c.UserContext(), *prompt, ordered_set.New(submitRequestBody...))
 	if err != nil {
 		return err
 	}

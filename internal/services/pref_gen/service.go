@@ -72,10 +72,3 @@ type preferences struct {
 	FavoritePlotElements       *preference[[]string]          `json:"favoritePlotElements,omitempty"`
 	MinimumRottenTomatoesScore *preference[uint]              `json:"minimumRottenTomatoesScore(inclusive),omitempty"`
 }
-
-func getPreferenceValue[T any](pref *preference[T]) interface{} {
-	if pref != nil {
-		return *pref
-	}
-	return nil
-}
