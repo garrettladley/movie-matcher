@@ -58,51 +58,70 @@ func (db *PostgresDB) Register(ctx context.Context, nuid applicant.NUID, name ap
 	return nil
 }
 
-func (db *PostgresDB) Token(ctx context.Context, nuid applicant.NUID) (*uuid.UUID, error) {
-	var dbResult struct {
-		Token sql.NullString `db:"token"`
-	}
+type tokenResult struct {
+	Token sql.NullString `db:"token"`
+}
 
+func (db *PostgresDB) Token(ctx context.Context, nuid applicant.NUID) (uuid.UUID, error) {
+	var dbResult tokenResult
 	if err := db.GetContext(ctx, &dbResult, "SELECT token FROM applicants WHERE nuid=$1;", nuid); err != nil {
-		return nil, err
+		return uuid.UUID{}, err
 	}
 
 	if !dbResult.Token.Valid {
-		return nil, utilities.NotFound("token")
+		return uuid.UUID{}, utilities.NotFound("token")
 	}
 
 	token, err := uuid.Parse(dbResult.Token.String)
 	if err != nil {
-		return nil, err
+		return uuid.UUID{}, err
 	}
 
-	return &token, nil
+	return token, nil
 }
 
-func (db *PostgresDB) Prompt(ctx context.Context, token uuid.UUID) (*algo.Prompt, error) {
-	var dbResult struct {
-		Prompt sql.NullString `db:"prompt"`
-	}
+type promptResult struct {
+	Prompt sql.NullString `db:"prompt"`
+}
 
-	if err := db.GetContext(
-		ctx,
-		&dbResult,
-		"SELECT prompt FROM applicants WHERE token=$1;",
-		token,
-	); err != nil {
-		return nil, err
+func (db *PostgresDB) Prompt(ctx context.Context, token uuid.UUID) (algo.Prompt, error) {
+	var dbResult promptResult
+	if err := db.GetContext(ctx, &dbResult, "SELECT prompt FROM applicants WHERE token=$1;", token); err != nil {
+		return algo.Prompt{}, err
 	}
 
 	if !dbResult.Prompt.Valid {
-		return nil, utilities.NotFound("prompt")
+		return algo.Prompt{}, utilities.NotFound("prompt")
 	}
 
 	var prompt algo.Prompt
 	if err := go_json.Unmarshal([]byte(dbResult.Prompt.String), &prompt); err != nil {
-		return nil, err
+		return algo.Prompt{}, err
 	}
 
-	return &prompt, nil
+	return prompt, nil
+}
+
+type solutionResult struct {
+	Solution sql.NullString `db:"solution"`
+}
+
+func (db *PostgresDB) Solution(ctx context.Context, token uuid.UUID) (ordered_set.OrderedSet[movie.ID], error) {
+	var dbResult solutionResult
+	if err := db.GetContext(ctx, &dbResult, "SELECT solution FROM applicants WHERE token=$1;", token); err != nil {
+		return ordered_set.OrderedSet[movie.ID]{}, err
+	}
+
+	if !dbResult.Solution.Valid {
+		return ordered_set.OrderedSet[movie.ID]{}, utilities.NotFound("solution")
+	}
+
+	var solution ordered_set.OrderedSet[movie.ID]
+	if err := go_json.Unmarshal([]byte(dbResult.Solution.String), &solution); err != nil {
+		return ordered_set.OrderedSet[movie.ID]{}, err
+	}
+
+	return solution, nil
 }
 
 func (db *PostgresDB) Submit(ctx context.Context, token uuid.UUID, score int) error {

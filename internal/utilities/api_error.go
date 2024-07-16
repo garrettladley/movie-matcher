@@ -15,7 +15,7 @@ type APIError struct {
 }
 
 func (e APIError) Error() string {
-	return fmt.Sprintf("api error: %d", e.StatusCode)
+	return fmt.Sprintf("api error: %d %v", e.StatusCode, e.Message)
 }
 
 func NewAPIError(statusCode int, err error) APIError {

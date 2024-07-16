@@ -49,13 +49,13 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	token := uuid.New()
 	now := time.Now()
 	prompt := s.algo.Generate(rand.New(rand.NewSource(now.UnixNano())))
-	solution, err := s.algo.Solution(c.UserContext(), prompt.Movies, prompt.People)
+	solution, err := s.algo.Solution(c.Context(), prompt.Movies, prompt.People)
 	if err != nil {
 		return err
 	}
 
 	if err := s.storage.Register(
-		c.UserContext(),
+		c.Context(),
 		nuid,
 		applicantName,
 		now,
