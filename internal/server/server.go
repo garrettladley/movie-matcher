@@ -1,7 +1,9 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"movie-matcher/internal/config"
@@ -14,6 +16,8 @@ import (
 
 	"github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/utils"
+	"github.com/gofiber/storage/memory/v2"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -47,17 +51,29 @@ func Setup(settings config.Settings) *fiber.App {
 		omdb.NewCachedClient(),
 	)
 
-	staticPaths := map[string]struct{}{
-		"/frontend/movies": {},
-	}
+	cacheStorage := memory.New()
+	keyGenerator := func(c *fiber.Ctx) string { return utils.CopyString(c.OriginalURL()) }
 
 	app.Use(cache.New(cache.Config{
 		Next: func(c *fiber.Ctx) bool {
-			_, found := staticPaths[c.Path()]
-			return !found
+			key := fmt.Sprintf("%s_%s", keyGenerator(c), c.Method())
+			value, err := cacheStorage.Get(key)
+			cacheHit := err == nil && value != nil
+
+			if cacheHit {
+				time.Sleep(500 * time.Millisecond)
+				return true
+			}
+
+			if strings.HasPrefix(c.OriginalURL(), "/frontend/movies") {
+				return false
+			}
+
+			return true
 		},
+		Storage:      cacheStorage,
+		KeyGenerator: keyGenerator,
 		Expiration:   time.Hour * 24 * 365, // 1 year
-		CacheControl: true,
 	}))
 
 	app.Route("/",
