@@ -12,10 +12,11 @@ type Card struct {
 }
 
 func MovieToCard(omdbMovie omdb.Movie, minutesRemaining *int) Card {
+	common := *commonFrom(omdbMovie)
 	return Card{
-		common:           *commonFrom(omdbMovie),
+		common:           common,
 		Plot:             omdbMovie.Plot,
-		PosterURL:        omdbMovie.Poster,
+		PosterURL:        PosterCatalog[common.ID],
 		MinutesRemaining: minutesRemaining,
 	}
 }
