@@ -20,6 +20,6 @@ func ParseNUID(str string) (NUID, error) {
 	return nuid, nil
 }
 
-func (n NUID) String() string {
-	return string(n)
+func (n *NUID) String() string {
+	return string(*n)
 }

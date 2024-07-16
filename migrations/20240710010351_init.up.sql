@@ -5,7 +5,7 @@ CREATE DOMAIN applicant_name_domain AS varchar(256) CHECK (value !~ '[/()"<>\\{}
 CREATE TABLE IF NOT EXISTS applicants (
     nuid nuid_domain PRIMARY KEY,
     applicant_name applicant_name_domain NOT NULL,
-    registration_time timestamp WITH time zone NOT NULL DEFAULT NOW(),
+    created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
     token uuid UNIQUE NOT NULL,
     prompt text NOT NULL,
     solution text NOT NULL

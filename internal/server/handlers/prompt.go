@@ -4,16 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"movie-matcher/internal/algo"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
-
-type PromptResponse struct {
-	Prompt algo.Prompt `json:"prompt"`
-}
 
 func (s *Service) Prompt(c *fiber.Ctx) error {
 	rawToken := c.Params("token")
@@ -29,9 +24,5 @@ func (s *Service) Prompt(c *fiber.Ctx) error {
 
 	return c.
 		Status(http.StatusOK).
-		JSON(
-			PromptResponse{
-				Prompt: *prompt,
-			},
-		)
+		JSON(prompt)
 }
