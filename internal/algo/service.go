@@ -36,7 +36,7 @@ func (s *Service) Generate(rand *rand.Rand) Prompt {
 	}
 }
 
-func (s *Service) Check(ctx context.Context, prompt Prompt, actual set.OrderedSet[movie.ID]) (uint, error) {
+func (s *Service) Check(ctx context.Context, prompt Prompt, actual set.OrderedSet[movie.ID]) (int, error) {
 	solution, err := s.Solution(context.Background(), prompt.Movies, prompt.People)
 	if err != nil {
 		return 0, err
@@ -87,6 +87,7 @@ func (s *Service) calculateScoreForMovie(ctx context.Context, id movie.ID, peopl
 	}
 
 	m := movie.FromOMDB(om)
+
 	score := uint(0)
 
 	for _, person := range people {

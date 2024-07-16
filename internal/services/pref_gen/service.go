@@ -1,7 +1,6 @@
 package pref_gen
 
 import (
-	"log/slog"
 	"math/rand"
 	"time"
 
@@ -12,22 +11,6 @@ import (
 type Person struct {
 	Name        string      `json:"name"`
 	Preferences preferences `json:"preferences"`
-}
-
-func (p *Person) Slog() {
-	preferences := map[string]interface{}{
-		"afterYear":                  getPreferenceValue(p.Preferences.AfterYear),
-		"beforeYear":                 getPreferenceValue(p.Preferences.BeforeYear),
-		"maximumAgeRating":           getPreferenceValue(p.Preferences.MaximumAgeRating),
-		"shorterThan":                getPreferenceValue(p.Preferences.ShorterThan),
-		"favoriteGenre":              getPreferenceValue(p.Preferences.FavoriteGenre),
-		"leastFavoriteDirector":      getPreferenceValue(p.Preferences.LeastFavoriteDirector),
-		"favoriteActors":             getPreferenceValue(p.Preferences.FavoriteActors),
-		"favoritePlotElements":       getPreferenceValue(p.Preferences.FavoritePlotElements),
-		"minimumRottenTomatoesScore": getPreferenceValue(p.Preferences.MinimumRottenTomatoesScore),
-	}
-
-	slog.Info("person", "name", p.Name, "preferences", preferences)
 }
 
 func GeneratePeople(rand *rand.Rand, n uint) []Person {

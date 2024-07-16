@@ -10,12 +10,18 @@ import (
 
 	"movie-matcher/internal/config"
 	"movie-matcher/internal/server"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal(err)
+	}
+
 	settings, err := config.GetSettings("config")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	app := server.Setup(*settings)

@@ -111,7 +111,7 @@ func buildQueryUrl(apiKey string, params params) (*url.URL, error) {
 		queryParams.Set("y", params.Year)
 	}
 
-	if params.PlotLength == "short" || params.PlotLength == "long" {
+	if params.PlotLength == "short" || params.PlotLength == "full" {
 		queryParams.Set("plot", params.PlotLength)
 	} else if params.PlotLength != "" {
 		return &url.URL{}, fmt.Errorf("invalid plot length specified: %s", params.PlotLength)

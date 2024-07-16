@@ -4,18 +4,14 @@ package omdb
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"movie-matcher/internal/duration"
 	"movie-matcher/internal/utilities"
-
-	"github.com/joho/godotenv"
 )
 
 type Movie struct {
@@ -36,7 +32,7 @@ type Movie struct {
 }
 
 func FindMovieById(ctx context.Context, id string) (Movie, error) {
-	res, err := client.query(ctx, params{ID: id, PlotLength: "long", ResultType: "movie", ApiVersion: 1})
+	res, err := client.query(ctx, params{ID: id, PlotLength: "full", ResultType: "movie", ApiVersion: 1})
 	if err != nil {
 		return Movie{}, err
 	}
@@ -47,7 +43,7 @@ func FindMovieById(ctx context.Context, id string) (Movie, error) {
 }
 
 func FindMovieByTitle(ctx context.Context, title string) (Movie, error) {
-	res, err := client.query(ctx, params{Title: title, PlotLength: "long", ResultType: "movie", ApiVersion: 1})
+	res, err := client.query(ctx, params{Title: title, PlotLength: "full", ResultType: "movie", ApiVersion: 1})
 	if err != nil {
 		return Movie{}, err
 	}
@@ -119,9 +115,6 @@ func movieFromResult(res result) Movie {
 
 var client = &apiClient{
 	apiKey: func() string {
-		if err := godotenv.Load(filepath.Join("..", "..", ".env")); err != nil {
-			log.Fatal(err)
-		}
 		return os.Getenv("OMDB_API_KEY")
 	},
 	httpClient: http.DefaultClient,

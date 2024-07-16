@@ -8,12 +8,7 @@ import (
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
-
-type TokenResponse struct {
-	Token uuid.UUID `json:"token"`
-}
 
 func (s *Service) Token(c *fiber.Ctx) error {
 	rawNUID := c.Params("nuid")
@@ -29,9 +24,5 @@ func (s *Service) Token(c *fiber.Ctx) error {
 
 	return c.
 		Status(http.StatusOK).
-		JSON(
-			TokenResponse{
-				Token: *token,
-			},
-		)
+		SendString(token.String())
 }
