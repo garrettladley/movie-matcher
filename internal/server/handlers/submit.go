@@ -2,19 +2,18 @@ package handlers
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"movie-matcher/internal/movie"
-	"movie-matcher/internal/set"
+	"movie-matcher/internal/ordered_set"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
-type submitRequestBody struct {
-	Ranking set.OrderedSet[movie.ID] `json:"ranking"`
-}
+type submitRequestBody []movie.ID
 
 func (s *Service) Submit(c *fiber.Ctx) error {
 	rawToken := c.Params("token")
@@ -25,7 +24,8 @@ func (s *Service) Submit(c *fiber.Ctx) error {
 
 	var submitRequestBody submitRequestBody
 	if err := c.BodyParser(&submitRequestBody); err != nil {
-		return utilities.InvalidJSON(err)
+		slog.Error("invalid JSON request data", "error", err)
+		return utilities.InvalidJSON()
 	}
 
 	prompt, err := s.storage.Prompt(c.UserContext(), token)
@@ -33,7 +33,7 @@ func (s *Service) Submit(c *fiber.Ctx) error {
 		return err
 	}
 
-	score, err := s.algo.Check(c.UserContext(), *prompt, submitRequestBody.Ranking)
+	score, err := s.algo.Check(c.UserContext(), *prompt, ordered_set.New(submitRequestBody...))
 	if err != nil {
 		return err
 	}

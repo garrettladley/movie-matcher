@@ -66,16 +66,16 @@ func (c *CachedClient) FindMovieByTitle(ctx context.Context, title string) (Movi
 	return movie, nil
 }
 
-type cachePrefix byte
+type cachePrefix int
 
 const (
-	idPrefix    cachePrefix = 0
-	titlePrefix cachePrefix = 1
+	idPrefix cachePrefix = iota
+	titlePrefix
 )
 
 func (c *CachedClient) checkCache(key string) (Movie, bool) {
 	movieBytes, err := c.Get(key)
-	if err != nil {
+	if movieBytes == nil || err != nil {
 		return Movie{}, false
 	}
 

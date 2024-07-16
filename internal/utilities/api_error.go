@@ -29,8 +29,8 @@ func BadRequest(err error) APIError {
 	return NewAPIError(http.StatusBadRequest, err)
 }
 
-func InvalidJSON(err error) APIError {
-	return NewAPIError(http.StatusBadRequest, fmt.Errorf("invalid JSON request data. err: %s", err))
+func InvalidJSON() APIError {
+	return NewAPIError(http.StatusBadRequest, errors.New("invalid JSON request data"))
 }
 
 func NotFound(title string) APIError {

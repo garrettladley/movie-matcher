@@ -8,15 +8,15 @@ import (
 	"sync"
 
 	"movie-matcher/internal/movie"
+	"movie-matcher/internal/ordered_set"
 	"movie-matcher/internal/services/omdb"
 	"movie-matcher/internal/services/pref_gen"
-	"movie-matcher/internal/set"
 	"movie-matcher/internal/utilities"
 )
 
 type Prompt struct {
-	Movies set.OrderedSet[movie.ID] `json:"movies"`
-	People []pref_gen.Person        `json:"people"`
+	Movies ordered_set.OrderedSet[movie.ID] `json:"movies"`
+	People []pref_gen.Person                `json:"people"`
 }
 
 type Service struct {
@@ -31,27 +31,27 @@ func NewService(client *omdb.CachedClient) *Service {
 
 func (s *Service) Generate(rand *rand.Rand) Prompt {
 	return Prompt{
-		Movies: set.NewOrderedSet(utilities.SelectRandom(movie.Catalog, 10)...),
+		Movies: ordered_set.New(utilities.SelectRandom(movie.Catalog, 10)...),
 		People: pref_gen.GeneratePeople(rand, 30),
 	}
 }
 
-func (s *Service) Check(ctx context.Context, prompt Prompt, actual set.OrderedSet[movie.ID]) (uint, error) {
+func (s *Service) Check(ctx context.Context, prompt Prompt, actual ordered_set.OrderedSet[movie.ID]) (int, error) {
 	solution, err := s.Solution(context.Background(), prompt.Movies, prompt.People)
 	if err != nil {
 		return 0, err
 	}
-	return set.Distance(solution, actual), nil
+	return ordered_set.Distance(solution, actual), nil
 }
 
-var orderedRatings = set.NewOrderedSet(pref_gen.Ratings...)
+var orderedRatings = ordered_set.New(pref_gen.Ratings...)
 
 type movieScore struct {
 	id    movie.ID
 	score uint
 }
 
-func (s *Service) Solution(ctx context.Context, movies set.OrderedSet[movie.ID], people []pref_gen.Person) (set.OrderedSet[movie.ID], error) {
+func (s *Service) Solution(ctx context.Context, movies ordered_set.OrderedSet[movie.ID], people []pref_gen.Person) (ordered_set.OrderedSet[movie.ID], error) {
 	scores := make([]movieScore, len(movies.Slice()))
 	var wg sync.WaitGroup
 	errChan := make(chan error, len(movies.Slice()))
@@ -73,7 +73,7 @@ func (s *Service) Solution(ctx context.Context, movies set.OrderedSet[movie.ID],
 	close(errChan)
 
 	if len(errChan) > 0 {
-		return set.OrderedSet[movie.ID]{}, <-errChan
+		return ordered_set.OrderedSet[movie.ID]{}, <-errChan
 	}
 
 	sortScores(scores)
@@ -87,6 +87,7 @@ func (s *Service) calculateScoreForMovie(ctx context.Context, id movie.ID, peopl
 	}
 
 	m := movie.FromOMDB(om)
+
 	score := uint(0)
 
 	for _, person := range people {
@@ -147,10 +148,10 @@ func sortScores(scores []movieScore) {
 	})
 }
 
-func extractMovieIDs(scores []movieScore) set.OrderedSet[movie.ID] {
+func extractMovieIDs(scores []movieScore) ordered_set.OrderedSet[movie.ID] {
 	result := make([]movie.ID, 0, len(scores))
 	for _, s := range scores {
 		result = append(result, s.id)
 	}
-	return set.NewOrderedSet(result...)
+	return ordered_set.New(result...)
 }

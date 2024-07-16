@@ -2,8 +2,9 @@ package pref_gen_test
 
 import (
 	"math/rand"
-	"movie-matcher/internal/services/pref_gen"
 	"testing"
+
+	"movie-matcher/internal/services/pref_gen"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -14,7 +15,8 @@ func TestGeneratePeople(t *testing.T) {
 		t.Parallel()
 		testCases := []struct {
 			count uint
-		}{{count: 0},
+		}{
+			{count: 0},
 			{count: 1},
 			{count: 8},
 		}

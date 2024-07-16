@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"math/rand"
 	"net/http"
 	"time"
@@ -26,7 +27,8 @@ type registerResponse struct {
 func (s *Service) Register(c *fiber.Ctx) error {
 	var registerRequestBody registerRequest
 	if err := c.BodyParser(&registerRequestBody); err != nil {
-		return utilities.InvalidJSON(err)
+		slog.Error("invalid JSON request data", "error", err)
+		return utilities.InvalidJSON()
 	}
 
 	errors := make(map[string]string)
@@ -45,7 +47,8 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	}
 
 	token := uuid.New()
-	prompt := s.algo.Generate(rand.New(rand.NewSource(time.Now().UnixNano())))
+	now := time.Now()
+	prompt := s.algo.Generate(rand.New(rand.NewSource(now.UnixNano())))
 	solution, err := s.algo.Solution(c.UserContext(), prompt.Movies, prompt.People)
 	if err != nil {
 		return err
@@ -54,7 +57,8 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	if err := s.storage.Register(
 		c.UserContext(),
 		nuid,
-		*applicantName,
+		applicantName,
+		now,
 		token,
 		prompt,
 		solution,
