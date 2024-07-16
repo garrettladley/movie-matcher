@@ -22,6 +22,16 @@ type Movie struct {
 	MetacriticScore     uint
 }
 
+type MovieDisplayDetails struct {
+	PosterURL 		string
+	TimeRemaining 	*uint
+}
+
+type MovieDisplay struct {
+	Movie
+	MovieDisplayDetails
+}
+
 type ID string // IMDb id
 
 func FromOMDB(omdbMovie omdb.Movie) Movie {
@@ -40,5 +50,17 @@ func FromOMDB(omdbMovie omdb.Movie) Movie {
 		IMDbScore:           omdbMovie.IMDbScore,
 		RottenTomatoesScore: omdbMovie.RottenTomatoesScore,
 		MetacriticScore:     omdbMovie.MetacriticScore,
+	}
+}
+
+// Convert a movie to a display movie:
+// Need to specify whether or not the movie is currently being watched (dependent on endpoint fetch)
+func MovieToDisplay(movie Movie, ) MovieDisplay {
+	return MovieDisplay{
+		Movie: movie,
+		MovieDisplayDetails: MovieDisplayDetails{
+			PosterURL: movie.ID.PosterURL(),
+			TimeRemaining: nil,
+		},
 	}
 }
