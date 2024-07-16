@@ -32,7 +32,7 @@ func NewService(client *omdb.CachedClient) *Service {
 
 func (s *Service) Generate(rand *rand.Rand) Prompt {
 	return Prompt{
-		Movies: ordered_set.New(utilities.SelectRandom(movie.Catalog, 10)...),
+		Movies: ordered_set.New(utilities.SelectRandom(movie.Catalog.Slice(), 10)...),
 		People: pref_gen.GeneratePeople(rand, 30),
 	}
 }

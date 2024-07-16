@@ -2,7 +2,7 @@ package movie
 
 import "movie-matcher/internal/ordered_set"
 
-var Catalog = []ID{
+var Catalog = ordered_set.New[ID](
 	"tt2582802",  // whiplash
 	"tt15239678", // dune 2
 	"tt3783958",  // lalaland
@@ -18,7 +18,7 @@ var Catalog = []ID{
 	"tt0058150",  // goldfinger
 	"tt1074638",  // skyfall
 	"tt1285016",  // the social network
-}
+)
 
 var TopMoviesCatalog = ordered_set.New[ID](
 	"tt2582802",  // whiplash
