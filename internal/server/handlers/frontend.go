@@ -22,6 +22,7 @@ func (s *Service) Frontend(c *fiber.Ctx) error {
 		movies    ordered_set.OrderedSet[movie.ID]
 		watching  bool
 	)
+
 	switch fetchType {
 	case "top":
 		movies = movie.TopMoviesCatalog
@@ -43,15 +44,16 @@ func (s *Service) Frontend(c *fiber.Ctx) error {
 }
 
 func (s *Service) fetchFrontendMovies(ctx context.Context, movies ordered_set.OrderedSet[movie.ID], watching bool) ([]movie.Card, error) {
-	n := movies.Len()
+	var (
+		wg      sync.WaitGroup
+		n       uint         = movies.Len()
+		cards   []movie.Card = make([]movie.Card, n)
+		errChan chan error   = make(chan error, len(movies.Slice()))
+	)
 
-	var wg sync.WaitGroup
-
-	cards := make([]movie.Card, n)
-	errChan := make(chan error, len(movies.Slice()))
-	for i, id := range movies.Slice() {
+	for index, id := range movies.Slice() {
 		wg.Add(1)
-		go func(i int, id movie.ID) {
+		go func(index int, id movie.ID) {
 			defer wg.Done()
 
 			m, err := s.client.FindMovieById(ctx, string(id))
@@ -66,8 +68,8 @@ func (s *Service) fetchFrontendMovies(ctx context.Context, movies ordered_set.Or
 				minutesRemaining = &randomMinutesRemaining
 			}
 
-			cards[i] = movie.MovieToCard(m, minutesRemaining)
-		}(i, id)
+			cards[index] = movie.MovieToCard(m, minutesRemaining)
+		}(index, id)
 	}
 
 	wg.Wait()
