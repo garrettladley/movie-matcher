@@ -48,7 +48,7 @@ func (s *Service) fetchFrontendMovies(ctx context.Context, movies ordered_set.Or
 		wg      sync.WaitGroup
 		n       uint         = movies.Len()
 		cards   []movie.Card = make([]movie.Card, n)
-		errChan chan error   = make(chan error, len(movies.Slice()))
+		errChan chan error   = make(chan error, n)
 	)
 
 	for index, id := range movies.Slice() {
