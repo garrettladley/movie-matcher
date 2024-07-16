@@ -6,14 +6,14 @@ import (
 )
 
 type common struct {
-	ID                  ID
-	Year                uint
-	AgeRating           string
-	Duration            duration.Duration
-	Genres              []string
-	Directors           []string
-	Actors              []string
-	RottenTomatoesScore uint
+	ID                  ID                `json:"id"`
+	Year                uint              `json:"year"`
+	AgeRating           string            `json:"ageRating"`
+	Duration            duration.Duration `json:"duration"`
+	Genres              []string          `json:"genres"`
+	Directors           []string          `json:"directors"`
+	Actors              []string          `json:"actors"`
+	RottenTomatoesScore uint              `json:"rottenTomatoesScore"`
 }
 
 func commonFrom(omdbMovie omdb.Movie) *common {
