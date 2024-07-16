@@ -86,7 +86,7 @@ func (s *Service) calculateScoreForMovie(ctx context.Context, id movie.ID, peopl
 
 	m := movie.FromOMDB(om)
 
-	var totalScore uint32
+	var totalScore atomic.Uint32
 	var wg sync.WaitGroup
 
 	for _, person := range people {
@@ -94,13 +94,13 @@ func (s *Service) calculateScoreForMovie(ctx context.Context, id movie.ID, peopl
 		go func(person pref_gen.Person) {
 			defer wg.Done()
 			personScore := calculatePersonScore(m, person)
-			atomic.AddUint32(&totalScore, personScore)
+			totalScore.Add(personScore)
 		}(person)
 	}
 
 	wg.Wait()
 
-	return movieScore{id: id, score: totalScore}, nil
+	return movieScore{id: id, score: uint32(totalScore.Load())}, nil
 }
 
 func calculatePersonScore(m movie.Movie, person pref_gen.Person) uint32 {
