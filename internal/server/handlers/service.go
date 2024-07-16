@@ -6,13 +6,13 @@ import (
 )
 
 type Service struct {
-	storage       storage.Storage
-	moviePrompter algo.MoviePromptService
+	storage storage.Storage
+	algo    *algo.Service
 }
 
-func NewService(storage storage.Storage, moviePrompter algo.MoviePromptService) *Service {
+func NewService(storage storage.Storage, algo *algo.Service) *Service {
 	return &Service{
-		storage:       storage,
-		moviePrompter: moviePrompter,
+		storage: storage,
+		algo:    algo,
 	}
 }

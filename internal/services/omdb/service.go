@@ -4,12 +4,18 @@ package omdb
 import (
 	"context"
 	"fmt"
-	"movie-matcher/internal/duration"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"movie-matcher/internal/duration"
+	"movie-matcher/internal/utilities"
+
+	"github.com/joho/godotenv"
 )
 
 type Movie struct {
@@ -22,7 +28,8 @@ type Movie struct {
 	Directors           []string          `json:"directors"`
 	Writers             []string          `json:"writers"`
 	Actors              []string          `json:"actors"`
-	Plot                string            `json:"plot"`
+	Plot                []string          `json:"plot"`
+	Languages           []string          `json:"languages"`
 	IMDbScore           uint              `json:"imdbScore"`
 	RottenTomatoesScore uint              `json:"rottenTomatoesScore"`
 	MetacriticScore     uint              `json:"metacriticScore"`
@@ -102,11 +109,20 @@ func movieFromResult(res result) Movie {
 		Directors:           strings.Split(res.Director, ", "),
 		Writers:             strings.Split(res.Writer, ", "),
 		Actors:              strings.Split(res.Actors, ", "),
-		Plot:                res.Plot,
+		Plot:                utilities.Tokenize(res.Plot),
+		Languages:           strings.Split(res.Language, ", "),
 		IMDbScore:           imdbScore,
 		RottenTomatoesScore: rottenTomatoesScore,
 		MetacriticScore:     metacriticScore,
 	}
 }
 
-var client = &apiClient{apiKey: func() string { return os.Getenv("OMDB_API_KEY") }, httpClient: http.DefaultClient}
+var client = &apiClient{
+	apiKey: func() string {
+		if err := godotenv.Load(filepath.Join("..", "..", ".env")); err != nil {
+			log.Fatal(err)
+		}
+		return os.Getenv("OMDB_API_KEY")
+	},
+	httpClient: http.DefaultClient,
+}

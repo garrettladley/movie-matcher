@@ -3,6 +3,8 @@ package set
 import (
 	"fmt"
 	"slices"
+
+	go_json "github.com/goccy/go-json"
 )
 
 // An OrderedSet is an ordered collection of elements that ensures no duplicates.
@@ -11,8 +13,26 @@ type OrderedSet[T comparable] struct {
 }
 
 // Creates a new OrderedSet from the provided elements by removing all duplicates. Order is preserved.
-func New[T comparable](elems ...T) OrderedSet[T] {
+func NewOrderedSet[T comparable](elems ...T) OrderedSet[T] {
 	return OrderedSet[T]{elems: dedupe(elems)}
+}
+
+// Creates a slice from an OrderedSet. Order is preserved.
+func (s OrderedSet[T]) Slice() []T {
+	return append([]T{}, s.elems...)
+}
+
+func (s OrderedSet[T]) MarshalJSON() ([]byte, error) {
+	return go_json.Marshal(s.Slice())
+}
+
+func (s *OrderedSet[T]) UnmarshalJSON(b []byte) error {
+	var v []T
+	if err := go_json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+	*s = NewOrderedSet(v...)
+	return nil
 }
 
 // Computes the distance between two OrderedSets, which is the sum of each element's distance.
