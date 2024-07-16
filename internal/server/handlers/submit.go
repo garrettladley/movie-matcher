@@ -28,17 +28,17 @@ func (s *Service) Submit(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	prompt, err := s.storage.Prompt(c.UserContext(), token)
+	prompt, err := s.storage.Prompt(c.Context(), token)
 	if err != nil {
 		return err
 	}
 
-	score, err := s.algo.Check(c.UserContext(), *prompt, ordered_set.New(submitRequestBody...))
+	score, err := s.algo.Check(c.Context(), *prompt, ordered_set.New(submitRequestBody...))
 	if err != nil {
 		return err
 	}
 
-	if err := s.storage.Submit(c.UserContext(), token, score); err != nil {
+	if err := s.storage.Submit(c.Context(), token, score); err != nil {
 		return err
 	}
 
