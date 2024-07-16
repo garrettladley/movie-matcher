@@ -12,7 +12,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type submitRequestBody set.OrderedSet[movie.ID]
+type submitRequestBody struct {
+	Ranking set.OrderedSet[movie.ID] `json:"ranking"`
+}
 
 func (s *Service) Submit(c *fiber.Ctx) error {
 	rawToken := c.Params("token")
@@ -26,8 +28,16 @@ func (s *Service) Submit(c *fiber.Ctx) error {
 		return utilities.InvalidJSON(err)
 	}
 
-	// MARK: @Jackson how to score a submission?
-	var score uint = 0
+	prompt, err := s.storage.Prompt(c.UserContext(), token)
+	if err != nil {
+		return err
+	}
+
+	score, err := s.algo.Check(c.UserContext(), *prompt, submitRequestBody.Ranking)
+	if err != nil {
+		return err
+	}
+
 	if err := s.storage.Submit(c.UserContext(), token, score); err != nil {
 		return err
 	}

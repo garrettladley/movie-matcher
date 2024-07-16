@@ -13,7 +13,7 @@ type OrderedSet[T comparable] struct {
 }
 
 // Creates a new OrderedSet from the provided elements by removing all duplicates. Order is preserved.
-func New[T comparable](elems ...T) OrderedSet[T] {
+func NewOrderedSet[T comparable](elems ...T) OrderedSet[T] {
 	return OrderedSet[T]{elems: dedupe(elems)}
 }
 
@@ -31,7 +31,7 @@ func (s *OrderedSet[T]) UnmarshalJSON(b []byte) error {
 	if err := go_json.Unmarshal(b, &v); err != nil {
 		return err
 	}
-	*s = New(v...)
+	*s = NewOrderedSet(v...)
 	return nil
 }
 

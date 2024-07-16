@@ -121,10 +121,7 @@ func buildQueryUrl(apiKey string, params params) (*url.URL, error) {
 		queryParams.Set("v", strconv.Itoa(params.ApiVersion))
 	}
 
-	requestUrl, err := url.Parse("http://www.omdbapi.com/")
-	if err != nil {
-		return &url.URL{}, fmt.Errorf("failed to parse base URL: %w", err)
-	}
+	requestUrl, _ := url.Parse("http://www.omdbapi.com/")
 
 	requestUrl.RawQuery = queryParams.Encode()
 	return requestUrl, nil

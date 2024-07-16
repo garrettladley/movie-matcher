@@ -3,8 +3,10 @@ package server
 import (
 	"net/http"
 
+	"movie-matcher/internal/algo"
 	"movie-matcher/internal/config"
 	"movie-matcher/internal/server/handlers"
+	"movie-matcher/internal/services/omdb"
 	"movie-matcher/internal/storage"
 	"movie-matcher/internal/utilities"
 
@@ -37,6 +39,7 @@ func Setup(settings config.Settings) *fiber.App {
 
 	service := handlers.NewService(
 		storage.NewPostgresDB(settings.Database),
+		algo.NewService(omdb.NewCachedClient()),
 	)
 
 	app.Route("/",

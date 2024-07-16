@@ -1,14 +1,12 @@
 package handlers
 
 import (
+	"math/rand"
 	"net/http"
 	"time"
 
-	"math/rand"
 	"movie-matcher/internal/algo"
 	"movie-matcher/internal/applicant"
-	"movie-matcher/internal/movie"
-	"movie-matcher/internal/set"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -47,8 +45,11 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	}
 
 	token := uuid.New()
-	prompt := algo.Generate(rand.New(rand.NewSource(time.Now().UnixNano())))
-	// MARK: @Jackson how to generate a solution?
+	prompt := s.algo.Generate(rand.New(rand.NewSource(time.Now().UnixNano())))
+	solution, err := s.algo.Solution(c.UserContext(), prompt.Movies, prompt.People)
+	if err != nil {
+		return err
+	}
 
 	if err := s.storage.Register(
 		c.UserContext(),
@@ -56,7 +57,7 @@ func (s *Service) Register(c *fiber.Ctx) error {
 		*applicantName,
 		token,
 		prompt,
-		set.OrderedSet[movie.ID]{},
+		solution,
 	); err != nil {
 		return err
 	}
