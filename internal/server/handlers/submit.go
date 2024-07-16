@@ -28,15 +28,12 @@ func (s *Service) Submit(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	prompt, err := s.storage.Prompt(c.Context(), token)
+	solution, err := s.storage.Solution(c.Context(), token)
 	if err != nil {
 		return err
 	}
 
-	score, err := s.algo.Check(c.Context(), *prompt, ordered_set.New(submitRequestBody...))
-	if err != nil {
-		return err
-	}
+	score := s.algo.Check(c.Context(), solution, ordered_set.New(submitRequestBody...))
 
 	if err := s.storage.Submit(c.Context(), token, score); err != nil {
 		return err

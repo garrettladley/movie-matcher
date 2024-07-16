@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"slices"
 	"sync"
+	"sync/atomic"
 
 	"movie-matcher/internal/movie"
 	"movie-matcher/internal/ordered_set"
@@ -36,19 +37,15 @@ func (s *Service) Generate(rand *rand.Rand) Prompt {
 	}
 }
 
-func (s *Service) Check(ctx context.Context, prompt Prompt, actual ordered_set.OrderedSet[movie.ID]) (int, error) {
-	solution, err := s.Solution(context.Background(), prompt.Movies, prompt.People)
-	if err != nil {
-		return 0, err
-	}
-	return ordered_set.Distance(solution, actual), nil
+func (s *Service) Check(ctx context.Context, expected ordered_set.OrderedSet[movie.ID], actual ordered_set.OrderedSet[movie.ID]) int {
+	return ordered_set.Distance(expected, actual)
 }
 
 var orderedRatings = ordered_set.New(pref_gen.Ratings...)
 
 type movieScore struct {
 	id    movie.ID
-	score uint
+	score uint32
 }
 
 func (s *Service) Solution(ctx context.Context, movies ordered_set.OrderedSet[movie.ID], people []pref_gen.Person) (ordered_set.OrderedSet[movie.ID], error) {
@@ -83,22 +80,30 @@ func (s *Service) Solution(ctx context.Context, movies ordered_set.OrderedSet[mo
 func (s *Service) calculateScoreForMovie(ctx context.Context, id movie.ID, people []pref_gen.Person) (movieScore, error) {
 	om, err := s.client.FindMovieById(ctx, string(id))
 	if err != nil {
-		return movieScore{id: id, score: 0}, fmt.Errorf("error finding movie by ID: %w", err)
+		return movieScore{id: id}, fmt.Errorf("error finding movie by ID: %w", err)
 	}
 
 	m := movie.FromOMDB(om)
 
-	score := uint(0)
+	var totalScore uint32
+	var wg sync.WaitGroup
 
 	for _, person := range people {
-		score += calculatePersonScore(m, person)
+		wg.Add(1)
+		go func(person pref_gen.Person) {
+			defer wg.Done()
+			personScore := calculatePersonScore(m, person)
+			atomic.AddUint32(&totalScore, personScore)
+		}(person)
 	}
 
-	return movieScore{id: id, score: score}, nil
+	wg.Wait()
+
+	return movieScore{id: id, score: totalScore}, nil
 }
 
-func calculatePersonScore(m movie.Movie, person pref_gen.Person) uint {
-	score := uint(0)
+func calculatePersonScore(m movie.Movie, person pref_gen.Person) uint32 {
+	var score uint
 
 	if person.Preferences.AfterYear != nil && m.Year >= person.Preferences.AfterYear.Value {
 		score += person.Preferences.AfterYear.Weight
@@ -139,7 +144,7 @@ func calculatePersonScore(m movie.Movie, person pref_gen.Person) uint {
 		score -= person.Preferences.MinimumRottenTomatoesScore.Weight
 	}
 
-	return score
+	return uint32(score)
 }
 
 func sortScores(scores []movieScore) {
