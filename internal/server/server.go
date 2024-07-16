@@ -55,6 +55,9 @@ func Setup(settings config.Settings) *fiber.App {
 				r.Get("prompt", service.Prompt)
 				r.Post("submit", service.Submit)
 			})
+			r.Route("frontend", func(r fiber.Router) {
+				r.Get("movies", service.Frontend)
+			})
 		},
 	)
 

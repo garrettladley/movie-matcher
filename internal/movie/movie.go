@@ -1,8 +1,11 @@
 package movie
 
 import (
+	"fmt"
+	"math/rand"
 	"movie-matcher/internal/duration"
 	"movie-matcher/internal/services/omdb"
+	"time"
 )
 
 type Movie struct {
@@ -24,7 +27,7 @@ type Movie struct {
 
 type MovieDisplayDetails struct {
 	PosterURL 		string
-	TimeRemaining 	*uint
+	TimeRemaining 	*int 	`json:"timeRemaining,omitempty"`
 }
 
 type MovieDisplay struct {
@@ -54,13 +57,20 @@ func FromOMDB(omdbMovie omdb.Movie) Movie {
 }
 
 // Convert a movie to a display movie:
-// Need to specify whether or not the movie is currently being watched (dependent on endpoint fetch)
-func MovieToDisplay(movie Movie, ) MovieDisplay {
-	return MovieDisplay{
-		Movie: movie,
-		MovieDisplayDetails: MovieDisplayDetails{
-			PosterURL: movie.ID.PosterURL(),
-			TimeRemaining: nil,
-		},
+func MovieToDisplay(movie Movie, curWatching bool) (*MovieDisplay, error) {
+	displayDetails, keyFound := CatalogDisplay[movie.ID]
+	if !keyFound {
+		return nil, fmt.Errorf("movie with ID %s not found in frontend catalog", movie.ID)
 	}
+
+	// compute a random number of minutes remaining for the movie
+	if curWatching {
+		randMinutes := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(120) + 1
+		displayDetails.TimeRemaining = &randMinutes
+	}
+
+	return &MovieDisplay{
+		Movie: movie,
+		MovieDisplayDetails: displayDetails,
+	}, nil
 }

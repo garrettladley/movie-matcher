@@ -20,12 +20,12 @@ type Prompt struct {
 }
 
 type Service struct {
-	client *omdb.CachedClient
+	Client *omdb.CachedClient
 }
 
 func NewService(client *omdb.CachedClient) *Service {
 	return &Service{
-		client: client,
+		Client: client,
 	}
 }
 
@@ -81,7 +81,7 @@ func (s *Service) Solution(ctx context.Context, movies ordered_set.OrderedSet[mo
 }
 
 func (s *Service) calculateScoreForMovie(ctx context.Context, id movie.ID, people []pref_gen.Person) (movieScore, error) {
-	om, err := s.client.FindMovieById(ctx, string(id))
+	om, err := s.Client.FindMovieById(ctx, string(id))
 	if err != nil {
 		return movieScore{id: id, score: 0}, fmt.Errorf("error finding movie by ID: %w", err)
 	}
