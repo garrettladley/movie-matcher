@@ -14,6 +14,6 @@ CREATE TABLE IF NOT EXISTS applicants (
 CREATE TABLE IF NOT EXISTS submissions (
     submission_id uuid PRIMARY KEY,
     token uuid NOT NULL REFERENCES applicants (token) ON DELETE CASCADE,
-    score text NOT NULL,
+    score smallint NOT NULL,
     submission_time timestamp WITH time zone NOT NULL DEFAULT NOW()
 );
