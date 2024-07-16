@@ -1,5 +1,4 @@
 name: movie-matcher
-
 region: nyc1
 services:
   - name: movie-matcher
@@ -35,6 +34,9 @@ services:
       - key: APP_DATABASE__DATABASE_NAME
         scope: RUN_TIME
         value: ${moviematcher.DATABASE}
+      - key: OMDB_API_KEY
+        scope: RUN_TIME
+        value: ${OMDB_API_KEY}
 databases:
   - engine: PG
     name: moviematcher
