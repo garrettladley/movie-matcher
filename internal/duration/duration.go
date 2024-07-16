@@ -11,7 +11,7 @@ import (
 type Duration time.Duration
 
 func (d Duration) MarshalJSON() ([]byte, error) {
-	return go_json.Marshal(time.Duration(d).String())
+	return go_json.Marshal(d.Value().String())
 }
 
 func (d *Duration) UnmarshalJSON(b []byte) error {
@@ -33,4 +33,8 @@ func (d *Duration) UnmarshalJSON(b []byte) error {
 	default:
 		return errors.New("invalid duration")
 	}
+}
+
+func (d Duration) Value() time.Duration {
+	return time.Duration(d)
 }

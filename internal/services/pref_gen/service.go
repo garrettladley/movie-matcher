@@ -15,7 +15,8 @@ type Person struct {
 
 func GeneratePeople(rand *rand.Rand, n uint) []Person {
 	people := make([]Person, 0, n)
-	for i := 0; uint(i) < n; i++ {
+	in := int(n)
+	for index := 0; index < in; index++ {
 		people = append(people, Person{
 			Name:        Names[rand.Intn(len(Names))],
 			Preferences: generatePreferences(rand),

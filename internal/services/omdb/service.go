@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"movie-matcher/internal/duration"
-	"movie-matcher/internal/utilities"
 )
 
 type Movie struct {
@@ -24,8 +23,9 @@ type Movie struct {
 	Directors           []string          `json:"directors"`
 	Writers             []string          `json:"writers"`
 	Actors              []string          `json:"actors"`
-	Plot                []string          `json:"plot"`
+	Plot                string            `json:"plot"`
 	Languages           []string          `json:"languages"`
+	Poster              string            `json:"poster"`
 	IMDbScore           uint              `json:"imdbScore"`
 	RottenTomatoesScore uint              `json:"rottenTomatoesScore"`
 	MetacriticScore     uint              `json:"metacriticScore"`
@@ -105,8 +105,9 @@ func movieFromResult(res result) Movie {
 		Directors:           strings.Split(res.Director, ", "),
 		Writers:             strings.Split(res.Writer, ", "),
 		Actors:              strings.Split(res.Actors, ", "),
-		Plot:                utilities.Tokenize(res.Plot),
+		Plot:                res.Plot,
 		Languages:           strings.Split(res.Language, ", "),
+		Poster:              res.Poster,
 		IMDbScore:           imdbScore,
 		RottenTomatoesScore: rottenTomatoesScore,
 		MetacriticScore:     metacriticScore,

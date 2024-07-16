@@ -32,7 +32,7 @@ func NewService(client *omdb.CachedClient) *Service {
 
 func (s *Service) Generate(rand *rand.Rand) Prompt {
 	return Prompt{
-		Movies: ordered_set.New(utilities.SelectRandom(movie.Catalog, 10)...),
+		Movies: ordered_set.New(utilities.SelectRandom(movie.Catalog.Slice(), 10)...),
 		People: pref_gen.GeneratePeople(rand, 30),
 	}
 }
@@ -49,21 +49,22 @@ type movieScore struct {
 }
 
 func (s *Service) Solution(ctx context.Context, movies ordered_set.OrderedSet[movie.ID], people []pref_gen.Person) (ordered_set.OrderedSet[movie.ID], error) {
-	scores := make([]movieScore, len(movies.Slice()))
 	var wg sync.WaitGroup
+
+	scores := make([]movieScore, len(movies.Slice()))
 	errChan := make(chan error, len(movies.Slice()))
 
-	for i, id := range movies.Slice() {
+	for index, id := range movies.Slice() {
 		wg.Add(1)
-		go func(i int, id movie.ID) {
+		go func(index int, id movie.ID) {
 			defer wg.Done()
 			score, err := s.calculateScoreForMovie(ctx, id, people)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to calculate score for movie %s: %w", id, err)
 				return
 			}
-			scores[i] = score
-		}(i, id)
+			scores[index] = score
+		}(index, id)
 	}
 
 	wg.Wait()
