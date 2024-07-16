@@ -57,9 +57,8 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	if err := s.storage.Register(
 		c.UserContext(),
 		nuid,
-		*applicantName,
+		applicantName,
 		now,
-
 		token,
 		prompt,
 		solution,
