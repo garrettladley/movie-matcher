@@ -34,6 +34,10 @@ func (s *OrderedSet[T]) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+func (s *OrderedSet[T]) Len() uint {
+	return uint(len(s.elems))
+}
+
 // Computes the distance between two OrderedSets, which is the sum of each element's distance.
 // A single element's distance is the difference between its positions in each ordered_set.
 // A set distance of 0 indicates that the sets are identical.

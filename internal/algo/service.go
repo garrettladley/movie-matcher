@@ -21,12 +21,12 @@ type Prompt struct {
 }
 
 type Service struct {
-	Client *omdb.CachedClient
+	client *omdb.CachedClient
 }
 
 func NewService(client *omdb.CachedClient) *Service {
 	return &Service{
-		Client: client,
+		client: client,
 	}
 }
 
@@ -49,8 +49,9 @@ type movieScore struct {
 }
 
 func (s *Service) Solution(ctx context.Context, movies ordered_set.OrderedSet[movie.ID], people []pref_gen.Person) (ordered_set.OrderedSet[movie.ID], error) {
-	scores := make([]movieScore, len(movies.Slice()))
 	var wg sync.WaitGroup
+
+	scores := make([]movieScore, len(movies.Slice()))
 	errChan := make(chan error, len(movies.Slice()))
 
 	for i, id := range movies.Slice() {
@@ -78,7 +79,7 @@ func (s *Service) Solution(ctx context.Context, movies ordered_set.OrderedSet[mo
 }
 
 func (s *Service) calculateScoreForMovie(ctx context.Context, id movie.ID, people []pref_gen.Person) (movieScore, error) {
-	om, err := s.Client.FindMovieById(ctx, string(id))
+	om, err := s.client.FindMovieById(ctx, string(id))
 	if err != nil {
 		return movieScore{id: id}, fmt.Errorf("error finding movie by ID: %w", err)
 	}

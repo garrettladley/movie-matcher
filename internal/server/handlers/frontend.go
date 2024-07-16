@@ -1,53 +1,85 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
-	"movie-matcher/internal/movie"
-	"movie-matcher/internal/utilities"
+	"math/rand"
 	"net/http"
+	"sync"
+	"time"
+
+	"movie-matcher/internal/movie"
+	"movie-matcher/internal/ordered_set"
+	"movie-matcher/internal/services/omdb"
+	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func (s *Service) Frontend(c *fiber.Ctx) error {
-	fetch_type := c.Query("type")
-	if fetch_type == "" {
-		return utilities.BadRequest(fmt.Errorf("missing type query parameter"))
+	var (
+		fetchType string = c.Query("type")
+		movies    ordered_set.OrderedSet[movie.ID]
+		watching  bool
+	)
+	switch fetchType {
+	case "top":
+		movies = movie.TopMoviesCatalog
+	case "recommended":
+		movies = movie.RecommendationsCatalog
+	case "watching":
+		movies = movie.ContinueWatchingCatalog
+		watching = true
+	default:
+		return utilities.BadRequest(fmt.Errorf("invalid type query parameter. got: '%s'", fetchType))
 	}
 
-	var movies []movie.ID
-	watching := false
-	switch fetch_type {
-		case "top": {
-			movies = movie.TopMoviesCatalog
-		}
-		case "recommended": {
-			movies = movie.RecommendationsCatalog
-		}
-		case "watching": {
-			movies = movie.ContinueWatchingCatalog
-			watching = true
-		}
-		default: {
-			return utilities.BadRequest(fmt.Errorf("invalid type query parameter"))
-		}
+	cards, err := s.fetchFrontendMovies(c.Context(), movies, watching)
+	if err != nil {
+		return err
 	}
 
-	// Loop over each movie and fetch content from OMDB
-	var moviesData []movie.MovieDisplay
-	for i := 0 ; i < len(movies) ; i++ {
-		movieData, err := s.algo.Client.FindMovieById(c.UserContext(), string(movies[i]))
-		if err != nil {
-			return err
-		}
+	return c.Status(http.StatusOK).JSON(cards)
+}
 
-		movieDisplay, err := movie.MovieToDisplay(movie.FromOMDB(movieData), watching)
-		if err != nil {
-			return err
-		}
+func (s *Service) fetchFrontendMovies(ctx context.Context, movies ordered_set.OrderedSet[movie.ID], watching bool) ([]movie.Card, error) {
+	n := movies.Len()
 
-		moviesData = append(moviesData, *movieDisplay)
+	var wg sync.WaitGroup
+
+	cards := make([]movie.Card, n)
+	errChan := make(chan error, len(movies.Slice()))
+	for i, id := range movies.Slice() {
+		wg.Add(1)
+		go func(i int, id movie.ID) {
+			defer wg.Done()
+
+			m, err := s.client.FindMovieById(ctx, string(id))
+			if err != nil {
+				errChan <- fmt.Errorf("failed to calculate score for movie %s: %w", id, err)
+				return
+			}
+
+			var minutesRemaining *int
+			if watching {
+				randomMinutesRemaining := generateMinutesRemaining(time.Now().UnixNano(), m)
+				minutesRemaining = &randomMinutesRemaining
+			}
+
+			cards[i] = movie.MovieToCard(m, minutesRemaining)
+		}(i, id)
 	}
 
-	return c.Status(http.StatusOK).JSON(moviesData)
+	wg.Wait()
+	close(errChan)
+
+	if len(errChan) > 0 {
+		cards = []movie.Card{}
+	}
+
+	return cards, <-errChan
+}
+
+func generateMinutesRemaining(seed int64, omdbMovie omdb.Movie) int {
+	return rand.New(rand.NewSource(seed)).Intn(int(omdbMovie.Duration.Value().Minutes())) + 1
 }

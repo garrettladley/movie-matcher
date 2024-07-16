@@ -2,8 +2,8 @@ package server
 
 import (
 	"net/http"
+	"time"
 
-	"movie-matcher/internal/algo"
 	"movie-matcher/internal/config"
 	"movie-matcher/internal/server/handlers"
 	"movie-matcher/internal/services/omdb"
@@ -12,6 +12,7 @@ import (
 
 	go_json "github.com/goccy/go-json"
 
+	"github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 
 	"github.com/gofiber/fiber/v2"
@@ -37,16 +38,30 @@ func Setup(settings config.Settings) *fiber.App {
 		Level: compress.LevelBestSpeed,
 	}))
 
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendStatus(http.StatusOK)
+	})
+
 	service := handlers.NewService(
 		storage.NewPostgresDB(settings.Database),
-		algo.NewService(omdb.NewCachedClient()),
+		omdb.NewCachedClient(),
 	)
+
+	staticPaths := map[string]struct{}{
+		"/frontend/movies": {},
+	}
+
+	app.Use(cache.New(cache.Config{
+		Next: func(c *fiber.Ctx) bool {
+			_, found := staticPaths[c.Path()]
+			return !found
+		},
+		Expiration:   time.Hour * 24 * 365, // 1 year
+		CacheControl: true,
+	}))
 
 	app.Route("/",
 		func(r fiber.Router) {
-			r.Get("health", func(c *fiber.Ctx) error {
-				return c.SendStatus(http.StatusOK)
-			})
 			r.Post("register", service.Register)
 			r.Route(":nuid", func(r fiber.Router) {
 				r.Get("token", service.Token)
