@@ -17,7 +17,7 @@ func (s *Service) Prompt(c *fiber.Ctx) error {
 		return utilities.BadRequest(fmt.Errorf("failed to parse token. got: %s", rawToken))
 	}
 
-	prompt, err := s.storage.Prompt(c.UserContext(), token)
+	prompt, err := s.storage.Prompt(c.Context(), token)
 	if err != nil {
 		return err
 	}

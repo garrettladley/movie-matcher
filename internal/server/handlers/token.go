@@ -17,7 +17,7 @@ func (s *Service) Token(c *fiber.Ctx) error {
 		return utilities.BadRequest(fmt.Errorf("failed to parse nuid. got: %s", rawNUID))
 	}
 
-	token, err := s.storage.Token(c.UserContext(), nuid)
+	token, err := s.storage.Token(c.Context(), nuid)
 	if err != nil {
 		return err
 	}
