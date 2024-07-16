@@ -2,17 +2,18 @@ package omdb
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
 
 	go_json "github.com/goccy/go-json"
+	"github.com/gofiber/fiber/v2"
 )
 
 type apiClient struct {
-	apiKey     func() string
-	httpClient *http.Client
+	apiKey func() string
 }
 
 func (c *apiClient) query(ctx context.Context, params params) (result, error) {
@@ -21,29 +22,53 @@ func (c *apiClient) query(ctx context.Context, params params) (result, error) {
 		return result{}, fmt.Errorf("failed to build request URL: %w", err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, requestUrl.String(), nil)
-	if err != nil {
-		return result{}, fmt.Errorf("failed to build request: %w", err)
-	}
+	agent := fiber.Get(requestUrl.String())
+	agent.JSONDecoder(go_json.Unmarshal)
 
-	response, err := c.httpClient.Do(request)
-	if err != nil {
-		return result{}, fmt.Errorf("failed to make request: %w", err)
-	}
-	defer response.Body.Close()
+	resultCh := make(chan struct {
+		res result
+		err error
+	})
 
-	if response.StatusCode != http.StatusOK {
-		return result{}, fmt.Errorf("received status code: %d", response.StatusCode)
-	}
+	go func() {
+		var res result
+		statusCode, _, errs := agent.Struct(&res)
+		if len(errs) > 0 {
+			resultCh <- struct {
+				res result
+				err error
+			}{result{}, fmt.Errorf("failed to make request: %w", errors.Join(errs...))}
+			return
+		}
 
-	var res result
-	if err := go_json.NewDecoder(response.Body).Decode(&res); err != nil {
-		return result{}, fmt.Errorf("failed to decode result: %w", err)
+		if statusCode != http.StatusOK {
+			resultCh <- struct {
+				res result
+				err error
+			}{result{}, fmt.Errorf("received status code: %d", statusCode)}
+			return
+		}
+
+		if res.Response == "False" {
+			resultCh <- struct {
+				res result
+				err error
+			}{result{}, fmt.Errorf("received an error from API: %s", res.Error)}
+			return
+		}
+
+		resultCh <- struct {
+			res result
+			err error
+		}{res, nil}
+	}()
+
+	select {
+	case <-ctx.Done():
+		return result{}, ctx.Err()
+	case res := <-resultCh:
+		return res.res, res.err
 	}
-	if res.Response == "False" {
-		return result{}, fmt.Errorf("received an error from API: %s", res.Error)
-	}
-	return res, nil
 }
 
 type params struct {

@@ -4,10 +4,10 @@ package omdb
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"movie-matcher/internal/duration"
@@ -113,9 +113,15 @@ func movieFromResult(res result) Movie {
 	}
 }
 
-var client = &apiClient{
-	apiKey: func() string {
-		return os.Getenv("OMDB_API_KEY")
-	},
-	httpClient: http.DefaultClient,
-}
+var (
+	apiKey string
+	once   sync.Once
+	client = &apiClient{
+		apiKey: func() string {
+			once.Do(func() {
+				apiKey = os.Getenv("OMDB_API_KEY")
+			})
+			return apiKey
+		},
+	}
+)
