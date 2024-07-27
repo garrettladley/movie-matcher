@@ -1,9 +1,11 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +13,8 @@ import (
 	"movie-matcher/internal/config"
 	"movie-matcher/internal/server"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/joho/godotenv"
 )
 
@@ -25,6 +29,8 @@ func main() {
 	}
 
 	app := server.Setup(*settings)
+
+	static(app)
 
 	go func() {
 		if err := app.Listen(fmt.Sprintf(":%d", settings.Application.Port)); err != nil {
@@ -43,4 +49,23 @@ func main() {
 	}
 
 	slog.Info("Server shutdown")
+}
+
+//go:embed public
+var PublicFS embed.FS
+
+//go:embed htmx
+var HtmxFS embed.FS
+
+func static(app *fiber.App) {
+	app.Use("/public", filesystem.New(filesystem.Config{
+		Root:       http.FS(PublicFS),
+		PathPrefix: "public",
+		Browse:     true,
+	}))
+	app.Use("/htmx", filesystem.New(filesystem.Config{
+		Root:       http.FS(HtmxFS),
+		PathPrefix: "htmx",
+		Browse:     true,
+	}))
 }
