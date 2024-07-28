@@ -45,3 +45,4 @@ services:
   instance_size_slug: basic-xxs
   name: movie-matcher
   source_dir: .
+  
