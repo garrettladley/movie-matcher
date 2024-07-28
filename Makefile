@@ -22,7 +22,6 @@ install: install-templ gen-templ
 	@mkdir -p cmd/server/deps
 	@wget -q -O cmd/server/deps/htmx.min.js.gz https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js.gz
 	@gunzip -f cmd/server/deps/htmx.min.js.gz
-	@npm install -D daisyui
 	@npm install -D flowbite
 	@cp -r node_modules/flowbite/dist/flowbite.min.js cmd/server/deps
 	@npm install -D apexcharts
