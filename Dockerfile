@@ -10,6 +10,7 @@ RUN make build-prod
 FROM scratch
 COPY --from=builder /app/config/ /config/
 COPY --from=builder /app/bin/movie_matcher /movie_matcher
+COPY configuration configuration
+ENV APP_ENVIRONMENT production
 
-EXPOSE 3000
 ENTRYPOINT [ "./movie_matcher" ]
