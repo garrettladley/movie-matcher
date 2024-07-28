@@ -67,7 +67,7 @@ const (
 
 func GetSettings(path string) (*Settings, error) {
 	var environment Environment
-	if env := os.Getenv("APP_ENVIRONMENT"); env != "" {
+	if env, ok := os.LookupEnv("APP_ENVIRONMENT"); ok {
 		environment = Environment(env)
 	} else {
 		environment = "local"
