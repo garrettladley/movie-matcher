@@ -6,11 +6,11 @@ import (
 	"unicode/utf8"
 )
 
-type ApplicantName string
+type Name string
 
 const forbiddenCharacters string = "/()'\"<>\\{}"
 
-func ParseApplicantName(str string) (ApplicantName, error) {
+func ParseName(str string) (Name, error) {
 	if strings.TrimSpace(str) == "" {
 		return "", fmt.Errorf("name cannot be empty. got: '%s'", str)
 	}
@@ -24,9 +24,9 @@ func ParseApplicantName(str string) (ApplicantName, error) {
 		return "", fmt.Errorf("name contains forbidden characters. got: '%s'", str)
 	}
 
-	return ApplicantName(str), nil
+	return Name(str), nil
 }
 
-func (name *ApplicantName) String() string {
+func (name *Name) String() string {
 	return string(*name)
 }

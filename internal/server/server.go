@@ -27,9 +27,10 @@ import (
 
 func Setup(settings config.Settings) *fiber.App {
 	app := fiber.New(fiber.Config{
-		JSONEncoder:  go_json.Marshal,
-		JSONDecoder:  go_json.Unmarshal,
-		ErrorHandler: utilities.ErrorHandler,
+		JSONEncoder:       go_json.Marshal,
+		JSONDecoder:       go_json.Unmarshal,
+		ErrorHandler:      utilities.ErrorHandler,
+		PassLocalsToViews: true,
 	})
 
 	app.Use(recover.New())
@@ -54,8 +55,19 @@ func Setup(settings config.Settings) *fiber.App {
 	cacheStorage := memory.New()
 	keyGenerator := func(c *fiber.Ctx) string { return utils.CopyString(c.OriginalURL()) }
 
+	staticPaths := map[string]struct{}{
+		"/deps/apexcharts.min.js": {},
+		"/deps/htmx.min.js":       {},
+		"/deps/flowbite.min.js":   {},
+		"/public/styles.css":      {},
+	}
+
 	app.Use(cache.New(cache.Config{
 		Next: func(c *fiber.Ctx) bool {
+			if _, ok := staticPaths[c.OriginalURL()]; ok {
+				return false
+			}
+
 			key := fmt.Sprintf("%s_%s", keyGenerator(c), c.Method())
 			value, err := cacheStorage.Get(key)
 			cacheHit := err == nil && value != nil
@@ -74,13 +86,18 @@ func Setup(settings config.Settings) *fiber.App {
 		Storage:      cacheStorage,
 		KeyGenerator: keyGenerator,
 		Expiration:   time.Hour * 24 * 365, // 1 year
+		CacheControl: true,
 	}))
 
 	app.Route("/",
 		func(r fiber.Router) {
+			r.Get("favicon.ico", x404)
+			r.Get("/deps/flowbite.min.js.map", x404)
 			r.Post("register", service.Register)
 			r.Route(":nuid", func(r fiber.Router) {
 				r.Get("token", service.Token)
+				r.Get("chart", service.Chart)
+				r.Get("status", service.Status)
 			})
 			r.Route(":token", func(r fiber.Router) {
 				r.Get("prompt", service.Prompt)
@@ -93,4 +110,8 @@ func Setup(settings config.Settings) *fiber.App {
 	)
 
 	return app
+}
+
+func x404(c *fiber.Ctx) error {
+	return c.SendStatus(http.StatusNotFound)
 }

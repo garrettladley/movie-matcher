@@ -8,3 +8,14 @@ bin/
 
 # ENV files
 .env
+
+.DS_Store
+tmp/
+deps/
+*_templ.go
+*_templ.txt
+*.fiber.gz
+public/
+node_modules/
+package-lock.json
+package.json

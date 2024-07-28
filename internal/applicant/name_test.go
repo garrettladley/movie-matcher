@@ -1,12 +1,13 @@
 package applicant_test
 
 import (
-	"movie-matcher/internal/applicant"
 	"strings"
 	"testing"
+
+	"movie-matcher/internal/applicant"
 )
 
-func TestParseApplicantNameErrors(t *testing.T) {
+func TestParseNameErrors(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -40,7 +41,7 @@ func TestParseApplicantNameErrors(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			_, err := applicant.ParseApplicantName(test.input)
+			_, err := applicant.ParseName(test.input)
 			if err == nil {
 				t.Fatalf("expected error to be %s, got nil", test.errorMessage)
 			}

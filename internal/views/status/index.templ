@@ -1,0 +1,246 @@
+package status
+
+import (
+	"fmt"
+	"movie-matcher/internal/applicant"
+	"movie-matcher/internal/data"
+	"movie-matcher/internal/server/ctxt"
+	"movie-matcher/internal/views/layouts"
+	"movie-matcher/internal/views/types"
+	"strconv"
+)
+
+templ Index[T types.Number](timeseries []types.TimePoint[T], name applicant.Name, currentLimit int) {
+	@layouts.Base() {
+		<div class="flex justify-center items-center h-full w-full">
+			@Chart(timeseries, name, currentLimit)
+		</div>
+	}
+}
+
+templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name, currentLimit int) {
+	<div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+		@ChartHeader(name, currentLimit)
+		<div id="area-chart"></div>
+		@ChartFooter(currentLimit)
+	</div>
+	<script src="/deps/flowbite.min.js"></script>
+	<script src="/deps/apexcharts.min.js"></script>
+	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
+	<data id="nuid" value={ templ.JSONString(ctxt.GetNUID(ctx)) }></data>
+	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>
+	@ApexChartScript()
+	@Poller()
+}
+
+templ ChartHeader(name applicant.Name, currentLimit int) {
+	<div class="flex justify-between">
+		<div>
+			<h5 class="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">{ name.String() }'s Submissions</h5>
+		</div>
+	</div>
+}
+
+templ ChartFooter(currentLimit int) {
+	<div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
+		<div class="flex justify-between items-center pt-5">
+			@DropdownButton(currentLimit)
+			@DropdownMenu(currentLimit)
+		</div>
+	</div>
+}
+
+templ DropdownButton(currentLimit int) {
+	<button
+		id="dropdownDefaultButton"
+		data-dropdown-toggle="lastSubmissionsdropdown"
+		data-dropdown-placement="bottom"
+		class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
+		type="button"
+	>
+		Last { strconv.Itoa(currentLimit) } Submissions
+		<svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+			<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"></path>
+		</svg>
+	</button>
+}
+
+templ DropdownMenu(currentLimit int) {
+	<div id="lastSubmissionsdropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+		<ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+			for _, n := range []int{5, 10, 25, 50, 100} {
+				if n != currentLimit {
+					@DropdownItem(n)
+				} else {
+					@DisabledDropdownItem(n)
+				}
+			}
+		</ul>
+	</div>
+}
+
+templ DropdownItem(n int) {
+	<li>
+		<a
+			hx-on:click={ templ.ComponentScript{
+								Call:fmt.Sprintf(
+									`fetch('/%s/chart?limit=%d')
+										.then(response => response.json())
+										.then(data => {
+											window.chart.updateSeries([{ data: data }]);
+											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
+										})
+										.catch(error => console.error('Error:', error));`, 
+									ctxt.GetNUID(ctx), n, n) } }
+			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+		>
+			Last { strconv.Itoa(n) } Submissions
+		</a>
+	</li>
+}
+
+templ DisabledDropdownItem(n int) {
+	<li>
+		<a
+			hx-on:click={ templ.ComponentScript{
+								Call:fmt.Sprintf(
+									`fetch('/%s/chart?limit=%d')
+										.then(response => response.json())
+										.then(data => {
+											window.chart.updateSeries([{ data: data }]);
+											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
+                						})
+										.catch(error => console.error('Error:', error));`, 
+									ctxt.GetNUID(ctx), n, n) } }
+			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+			disabled
+		>
+			Last { strconv.Itoa(n) } Submissions
+		</a>
+	</li>
+}
+
+templ ApexChartScript() {
+	<script type="text/javascript">
+		if (document.getElementById("area-chart") && typeof ApexCharts !== 'undefined') {
+			window.chart = new ApexCharts(document.getElementById("area-chart"), {
+				chart: {
+					height: "100%",
+					maxWidth: "100%",
+					type: "area",
+					fontFamily: "Inter, sans-serif",
+					dropShadow: {
+						enabled: false,
+					},
+					toolbar: {
+						show: false,
+					},
+				},
+				tooltip: {
+					enabled: true,
+					x: {
+						show: false,
+					},
+				},
+				fill: {
+					type: "gradient",
+					gradient: {
+						opacityFrom: 0.55,
+						opacityTo: 0,
+						shade: "#1C64F2",
+						gradientToColors: ["#1C64F2"],
+					},
+				},
+				dataLabels: {
+					enabled: false,
+				},
+				stroke: {
+					width: 6,
+				},
+				grid: {
+					show: false,
+					strokeDashArray: 4,
+					padding: {
+						left: 2,
+						right: 2,
+						top: 0
+					},
+				},
+				series: [{
+					data: JSON.parse(document.getElementById('data').value),
+					color: "#1A56DB",
+				}],
+				xaxis: {
+					labels: {
+						show: false,
+					},
+					axisBorder: {
+						show: false,
+					},
+					axisTicks: {
+						show: false,
+					},
+					type: "datetime",
+				},
+				yaxis: {
+					show: false,
+				},
+			});
+			window.chart.render();
+		}
+	</script>
+}
+
+templ Poller() {
+	<script type="text/javascript">
+		let intervalId;
+		let timeoutId;
+		const pollingInterval = 10000; // 10 seconds
+		const inactivityLimit = 60000; // 1 minute
+
+		function startPolling() {
+			if (!intervalId) {
+				intervalId = setInterval(function() {
+					htmx.ajax('GET', `/${JSON.parse(document.getElementById('nuid').value)}/chart?limit=${JSON.parse(document.getElementById('currentLimit').value)}`, {
+						swap: 'none',
+						onAfterSwap: function() {
+							window.chart.updateSeries([{ data: JSON.parse(document.getElementById('data').value) }]);
+						}
+					});
+				}, pollingInterval);
+			}
+		}
+
+		function stopPolling() {
+			if (intervalId) {
+				clearInterval(intervalId);
+				intervalId = null;
+			}
+		}
+
+		function resetInactivityTimer() {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+			timeoutId = setTimeout(stopPolling, inactivityLimit);
+			startPolling();
+		}
+
+		document.addEventListener('visibilitychange', function() {
+			if (document.hidden) {
+				stopPolling();
+			} else {
+				startPolling();
+				resetInactivityTimer();
+			}
+		});
+
+		document.addEventListener('mousemove', resetInactivityTimer);
+		document.addEventListener('keydown', resetInactivityTimer);
+		document.addEventListener('scroll', resetInactivityTimer);
+		document.addEventListener('click', resetInactivityTimer);
+
+		startPolling();
+		resetInactivityTimer();
+	</script>
+}

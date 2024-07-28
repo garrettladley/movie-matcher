@@ -1,11 +1,10 @@
----
 name: CI
 
 on:
   pull_request:
-    branches: [ "*" ]
+    branches: ["*"]
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 concurrency:
@@ -23,6 +22,10 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@main
       - name: Lint Nix code
         run: nix develop --impure -c alejandra -c .
+      - name: make install
+        run: nix develop --impure -c make install
+      - name: make build
+        run: nix develop --impure -c make build-prod
       - name: Lint Go code
         run: nix develop --impure -c golangci-lint run ./... --timeout=5m
   test:
@@ -33,6 +36,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
+      - name: make install
+        run: nix develop --impure -c make install
+      - name: make build
+        run: nix develop --impure -c make build-prod
       - name: Test Go code
         run: nix develop --impure -c go test ./...
-...

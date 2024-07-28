@@ -15,8 +15,8 @@ import (
 )
 
 type registerRequest struct {
-	RawApplicantName string `json:"name"`
-	RawNUID          string `json:"nuid"`
+	RawName string `json:"name"`
+	RawNUID string `json:"nuid"`
 }
 
 type registerResponse struct {
@@ -37,7 +37,7 @@ func (s *Service) Register(c *fiber.Ctx) error {
 		errors["nuid"] = err.Error()
 	}
 
-	applicantName, err := applicant.ParseApplicantName(registerRequestBody.RawApplicantName)
+	Name, err := applicant.ParseName(registerRequestBody.RawName)
 	if err != nil {
 		errors["name"] = err.Error()
 	}
@@ -57,7 +57,7 @@ func (s *Service) Register(c *fiber.Ctx) error {
 	if err := s.storage.Register(
 		c.Context(),
 		nuid,
-		applicantName,
+		Name,
 		now,
 		token,
 		prompt,

@@ -6,3 +6,5 @@ Dockerfile
 scripts/
 migrations/
 README.md
+package.json
+package-lock.json

@@ -3,6 +3,7 @@ module movie-matcher
 go 1.22.4
 
 require (
+	github.com/a-h/templ v0.2.747
 	github.com/alecthomas/kong v0.9.0
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/lib/pq v1.10.9
@@ -27,15 +28,14 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/multierr v1.9.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (
-	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/goccy/go-json v0.10.3
 	github.com/gofiber/storage/memory/v2 v2.0.1
 	github.com/google/uuid v1.6.0
@@ -50,5 +50,5 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
 )
