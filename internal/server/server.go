@@ -56,8 +56,10 @@ func Setup(settings config.Settings) *fiber.App {
 	keyGenerator := func(c *fiber.Ctx) string { return utils.CopyString(c.OriginalURL()) }
 
 	staticPaths := map[string]struct{}{
-		"/htmx/htmx.min.js":  {},
-		"/public/styles.css": {},
+		"/deps/apexcharts.min.js": {},
+		"/deps/htmx.min.js":       {},
+		"/deps/flowbite.min.js":   {},
+		"/public/styles.css":      {},
 	}
 
 	app.Use(cache.New(cache.Config{
@@ -90,7 +92,7 @@ func Setup(settings config.Settings) *fiber.App {
 	app.Route("/",
 		func(r fiber.Router) {
 			r.Get("favicon.ico", x404)
-			r.Get("/public/flowbite.min.js.map", x404)
+			r.Get("/deps/flowbite.min.js.map", x404)
 			r.Post("register", service.Register)
 			r.Route(":nuid", func(r fiber.Router) {
 				r.Get("token", service.Token)

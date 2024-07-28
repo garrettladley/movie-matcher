@@ -24,8 +24,8 @@ templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name
 		<div id="area-chart"></div>
 		@ChartFooter(currentLimit)
 	</div>
-	<script src="/public/flowbite.min.js"></script>
-	<script src="/public/apexcharts.min.js"></script>
+	<script src="/deps/flowbite.min.js"></script>
+	<script src="/deps/apexcharts.min.js"></script>
 	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
 	<data id="nuid" value={ templ.JSONString(ctxt.GetNUID(ctx)) }></data>
 	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>

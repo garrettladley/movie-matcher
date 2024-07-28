@@ -54,8 +54,8 @@ func main() {
 //go:embed public
 var PublicFS embed.FS
 
-//go:embed htmx
-var HtmxFS embed.FS
+//go:embed deps
+var DepsFS embed.FS
 
 func static(app *fiber.App) {
 	app.Use("/public", filesystem.New(filesystem.Config{
@@ -63,9 +63,9 @@ func static(app *fiber.App) {
 		PathPrefix: "public",
 		Browse:     true,
 	}))
-	app.Use("/htmx", filesystem.New(filesystem.Config{
-		Root:       http.FS(HtmxFS),
-		PathPrefix: "htmx",
+	app.Use("/deps", filesystem.New(filesystem.Config{
+		Root:       http.FS(DepsFS),
+		PathPrefix: "deps",
 		Browse:     true,
 	}))
 }

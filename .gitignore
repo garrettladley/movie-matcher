@@ -11,7 +11,7 @@ bin/
 
 .DS_Store
 tmp/
-htmx/
+deps/
 *_templ.go
 *_templ.txt
 *.fiber.gz

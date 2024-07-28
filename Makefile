@@ -19,15 +19,14 @@ install: install-templ gen-templ
 	@go get ./...
 	@go mod tidy
 	@go mod download
-	@mkdir -p cmd/server/htmx
-	@wget -q -O cmd/server/htmx/htmx.min.js.gz https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js.gz
-	@gunzip -f cmd/server/htmx/htmx.min.js.gz
+	@mkdir -p cmd/server/deps
+	@wget -q -O cmd/server/deps/htmx.min.js.gz https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js.gz
+	@gunzip -f cmd/server/deps/htmx.min.js.gz
 	@npm install -D daisyui
 	@npm install -D flowbite
-	@mkdir -p cmd/server/public/
-	@cp -r node_modules/flowbite/dist/flowbite.min.js cmd/server/public/
-	@cp -r node_modules/apexcharts/dist/apexcharts.min.js cmd/server/public/
+	@cp -r node_modules/flowbite/dist/flowbite.min.js cmd/server/deps
 	@npm install -D apexcharts
+	@cp -r node_modules/apexcharts/dist/apexcharts.min.js cmd/server/deps
 	@npm install -D tailwindcss
 
 

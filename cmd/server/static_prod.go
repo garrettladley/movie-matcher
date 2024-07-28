@@ -15,9 +15,9 @@ func public() http.Handler {
 	return http.FileServerFS(publicFS)
 }
 
-//go:embed htmx
-var htmxFS embed.FS
+//go:embed deps
+var depsFS embed.FS
 
-func htmx() http.Handler {
-	return http.FileServerFS(htmxFS)
+func deps() http.Handler {
+	return http.FileServerFS(depsFS)
 }
