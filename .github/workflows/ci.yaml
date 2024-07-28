@@ -24,6 +24,8 @@ jobs:
         run: nix develop --impure -c alejandra -c .
       - name: make install
         run: nix develop --impure -c make install
+      - name: make build
+        run: nix develop --impure -c make build
       - name: Lint Go code
         run: nix develop --impure -c golangci-lint run ./... --timeout=5m
   test:
@@ -36,5 +38,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@main
       - name: make install
         run: nix develop --impure -c make install
+      - name: make build
+        run: nix develop --impure -c make build
       - name: Test Go code
         run: nix develop --impure -c go test ./...
