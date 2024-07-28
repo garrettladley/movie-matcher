@@ -24,7 +24,7 @@ jobs:
       - name: Lint Nix code
         run: nix develop --impure -c alejandra -c .
       - name: Lint Go code
-        run: nix develop --impure -c make install && golangci-lint run ./... --timeout=5m
+        run: nix develop --impure -c "make install && golangci-lint run ./... --timeout=5m"
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -34,4 +34,4 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
       - name: Test Go code
-        run: nix develop --impure -c make install && go test ./...
+        run: nix develop --impure -c "make install && go test ./..."
