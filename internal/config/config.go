@@ -108,10 +108,10 @@ func GetSettings(path string) (*Settings, error) {
 		dbPrefix := fmt.Sprintf("%sDATABASE__", appPrefix)
 		applicationPrefix := fmt.Sprintf("%sAPPLICATION__", appPrefix)
 
-		portStr := os.Getenv(fmt.Sprintf("%sPORT", appPrefix))
-		portInt, err := strconv.Atoi(portStr)
+		dbPortStr := os.Getenv(fmt.Sprintf("%sPORT", dbPrefix))
+		dbPortInt, err := strconv.Atoi(dbPortStr)
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse port: %w", err)
+			return nil, fmt.Errorf("failed to parse db port: %w", err)
 		}
 
 		return &Settings{
@@ -119,7 +119,7 @@ func GetSettings(path string) (*Settings, error) {
 				Username:     os.Getenv(fmt.Sprintf("%sUSERNAME", dbPrefix)),
 				Password:     os.Getenv(fmt.Sprintf("%sPASSWORD", dbPrefix)),
 				Host:         os.Getenv(fmt.Sprintf("%sHOST", dbPrefix)),
-				Port:         uint16(portInt),
+				Port:         uint16(dbPortInt),
 				DatabaseName: os.Getenv(fmt.Sprintf("%sDATABASE_NAME", dbPrefix)),
 				RequireSSL:   prodSettings.Database.RequireSSL,
 			},
