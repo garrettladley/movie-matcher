@@ -109,7 +109,7 @@ func GetSettings(path string) (*Settings, error) {
 		applicationPrefix := fmt.Sprintf("%sAPPLICATION__", appPrefix)
 
 		portStr := os.Getenv(fmt.Sprintf("%sPORT", appPrefix))
-		portInt, err := (strconv.Atoi(portStr))
+		portInt, err := strconv.Atoi(portStr)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse port: %w", err)
 		}
