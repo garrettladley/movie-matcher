@@ -2,16 +2,18 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
+
+	"movie-matcher/internal/data"
+	"movie-matcher/internal/server/ctxt"
 
 	"movie-matcher/internal/applicant"
-	"movie-matcher/internal/server/ctxt"
 	"movie-matcher/internal/utilities"
-	"movie-matcher/internal/views/status"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func (s *Service) Status(c *fiber.Ctx) error {
+func (s *Service) Chart(c *fiber.Ctx) error {
 	rawNUID := c.Params("nuid")
 	nuid, err := applicant.ParseNUID(rawNUID)
 	if err != nil {
@@ -27,10 +29,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 		return err
 	}
 
-	name, err := s.storage.Name(c.Context(), nuid)
-	if err != nil {
-		return err
-	}
-
-	return into(c, status.Index(intoTimePoints(submissions), name, limit))
+	return c.
+		Status(http.StatusOK).
+		JSON(data.Into(intoTimePoints(submissions)))
 }

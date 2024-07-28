@@ -8,12 +8,8 @@ module.exports = {
     ],
     safelist: [],
     plugins: [
-        require("daisyui"),
         require('flowbite/plugin')({
             charts: true,
         })
     ],
-    daisyui: {
-        themes: ["dark"]
-    }
  }

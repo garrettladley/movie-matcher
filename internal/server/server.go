@@ -91,11 +91,11 @@ func Setup(settings config.Settings) *fiber.App {
 		func(r fiber.Router) {
 			r.Get("favicon.ico", x404)
 			r.Get("/public/flowbite.min.js.map", x404)
-			r.Get("status", service.Status)
 			r.Post("register", service.Register)
 			r.Route(":nuid", func(r fiber.Router) {
 				r.Get("token", service.Token)
-				// MARK:
+				r.Get("chart", service.Chart)
+				r.Get("status", service.Status)
 			})
 			r.Route(":token", func(r fiber.Router) {
 				r.Get("prompt", service.Prompt)

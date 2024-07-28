@@ -51,5 +51,5 @@ gen-templ:
 
 .PHONY: watch-templ
 watch-templ:
-	@templ generate --watch --proxy=http://127.0.0.1:3000
+	@templ generate --watch --proxy=http://127.0.0.1:8000
 
