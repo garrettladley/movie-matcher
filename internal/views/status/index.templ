@@ -27,7 +27,10 @@ templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name
 	<script src="/public/flowbite.min.js"></script>
 	<script src="/public/apexcharts.min.js"></script>
 	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
+	<data id="nuid" value={ templ.JSONString(ctxt.GetNUID(ctx)) }></data>
+	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>
 	@ApexChartScript()
+	@Poller()
 }
 
 templ ChartHeader(name applicant.Name, currentLimit int) {
@@ -185,5 +188,59 @@ templ ApexChartScript() {
 			});
 			window.chart.render();
 		}
+	</script>
+}
+
+templ Poller() {
+	<script type="text/javascript">
+		let intervalId;
+		let timeoutId;
+		const pollingInterval = 10000; // 10 seconds
+		const inactivityLimit = 60000; // 1 minute
+
+		function startPolling() {
+			if (!intervalId) {
+				intervalId = setInterval(function() {
+					htmx.ajax('GET', `/${JSON.parse(document.getElementById('nuid').value)}/chart?limit=${JSON.parse(document.getElementById('currentLimit').value)}`, {
+						swap: 'none',
+						onAfterSwap: function() {
+							window.chart.updateSeries([{ data: JSON.parse(document.getElementById('data').value) }]);
+						}
+					});
+				}, pollingInterval);
+			}
+		}
+
+		function stopPolling() {
+			if (intervalId) {
+				clearInterval(intervalId);
+				intervalId = null;
+			}
+		}
+
+		function resetInactivityTimer() {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+			timeoutId = setTimeout(stopPolling, inactivityLimit);
+			startPolling();
+		}
+
+		document.addEventListener('visibilitychange', function() {
+			if (document.hidden) {
+				stopPolling();
+			} else {
+				startPolling();
+				resetInactivityTimer();
+			}
+		});
+
+		document.addEventListener('mousemove', resetInactivityTimer);
+		document.addEventListener('keydown', resetInactivityTimer);
+		document.addEventListener('scroll', resetInactivityTimer);
+		document.addEventListener('click', resetInactivityTimer);
+
+		startPolling();
+		resetInactivityTimer();
 	</script>
 }
