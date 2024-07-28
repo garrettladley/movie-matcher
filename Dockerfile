@@ -8,9 +8,8 @@ RUN make install
 RUN make build-prod
 
 FROM scratch
-COPY --from=builder /app/config/ /config/
 COPY --from=builder /app/bin/movie_matcher /movie_matcher
-COPY configuration configuration
+COPY --from=builder /app/config/ /config/
 ENV APP_ENVIRONMENT production
 
 ENTRYPOINT [ "./movie_matcher" ]
