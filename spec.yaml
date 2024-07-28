@@ -1,8 +1,10 @@
 databases:
-- engine: PG
+- cluster_name: app-755eaa6d-90d8-4fdd-ba7f-bbde23d5a448
+  db_name: moviematcherdb
+  db_user: moviematcherdb
+  engine: PG
   name: moviematcherdb
-  num_nodes: 1
-  size: db-s-dev-database
+  production: true
   version: "16"
 ingress:
   rules:
