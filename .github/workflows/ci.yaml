@@ -25,7 +25,7 @@ jobs:
       - name: make install
         run: nix develop --impure -c make install
       - name: make build
-        run: nix develop --impure -c make build
+        run: nix develop --impure -c make build-prod
       - name: Lint Go code
         run: nix develop --impure -c golangci-lint run ./... --timeout=5m
   test:
@@ -39,6 +39,6 @@ jobs:
       - name: make install
         run: nix develop --impure -c make install
       - name: make build
-        run: nix develop --impure -c make build
+        run: nix develop --impure -c make build-prod
       - name: Test Go code
         run: nix develop --impure -c go test ./...
