@@ -8,6 +8,7 @@ import (
 	"movie-matcher/internal/model"
 	"movie-matcher/internal/server/ctxt"
 	"movie-matcher/internal/utilities"
+	"movie-matcher/internal/views/not_found"
 	"movie-matcher/internal/views/status"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +18,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	rawNUID := c.Params("nuid")
 	nuid, err := applicant.ParseNUID(rawNUID)
 	if err != nil {
-		return utilities.BadRequest(fmt.Errorf("failed to parse nuid. got: %s", rawNUID))
+		return utilities.IntoTempl(c, not_found.NotFound(rawNUID, fmt.Errorf("invalid NUID: %s", rawNUID)))
 	}
 
 	ctxt.WithNUID(c, nuid)
@@ -61,9 +62,9 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			return err
+			return utilities.IntoTempl(c, not_found.NotFound(rawNUID, fmt.Errorf("invalid NUID: %s", rawNUID)))
 		}
 	}
 
-	return into(c, status.Index(intoTimePoints(<-submissionsCh), <-nameCh, limit))
+	return utilities.IntoTempl(c, status.Index(intoTimePoints(<-submissionsCh), <-nameCh, limit))
 }

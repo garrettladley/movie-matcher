@@ -11,6 +11,7 @@ import (
 	"movie-matcher/internal/services/omdb"
 	"movie-matcher/internal/storage"
 	"movie-matcher/internal/utilities"
+	"movie-matcher/internal/views/not_found"
 
 	go_json "github.com/goccy/go-json"
 
@@ -108,6 +109,13 @@ func Setup(settings config.Settings) *fiber.App {
 			})
 		},
 	)
+
+	app.Use(func(c *fiber.Ctx) error {
+		if _, ok := staticPaths[c.OriginalURL()]; ok {
+			return c.Next()
+		}
+		return utilities.IntoTempl(c, not_found.NotFound("", nil))
+	})
 
 	return app
 }
