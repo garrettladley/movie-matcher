@@ -2,13 +2,18 @@ package applicant
 
 import (
 	"fmt"
-	"strings"
+	"regexp"
 )
 
 type NUEmail string
 
 func ParseNUEmail(str string) (NUEmail, error) {
-	if ok := strings.HasSuffix(str, "@northeastern.edu"); !ok {
+	re, err := regexp.Compile(`[a-zA-Z.]+@northeastern.edu`)
+	if err != nil {
+		return "", err
+	}
+
+	if isNUEmail := re.MatchString(str); !isNUEmail {
 		return "", fmt.Errorf("invalid northeastern email. got: %s", str)
 	}
 
