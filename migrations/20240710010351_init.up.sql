@@ -1,4 +1,4 @@
-CREATE DOMAIN nu_email_domain AS varchar(64) CHECK (value ~ '^[a-zA-Z.]+@northeastern\.edu$');
+CREATE DOMAIN nu_email_domain AS varchar(64) CHECK (value ~ '^[a-zA-Z]+\.[a-zA-Z]+@northeastern\.edu$');
 
 CREATE DOMAIN applicant_name_domain AS varchar(256) CHECK (value !~ '[/()"<>\\{}]');
 

@@ -8,7 +8,7 @@ import (
 type NUEmail string
 
 func ParseNUEmail(str string) (NUEmail, error) {
-	re, err := regexp.Compile(`[a-zA-Z.]+@northeastern.edu`)
+	re, err := regexp.Compile(`^[a-zA-Z]+\.[a-zA-Z]+@northeastern\.edu$`)
 	if err != nil {
 		return "", err
 	}
