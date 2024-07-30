@@ -27,7 +27,7 @@ templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name
 	<script src="/deps/flowbite.min.js"></script>
 	<script src="/deps/apexcharts.min.js"></script>
 	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
-	<data id="nuid" value={ templ.JSONString(ctxt.GetNUID(ctx)) }></data>
+	<data id="email" value={ templ.JSONString(ctxt.GetEmail(ctx)) }></data>
 	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>
 	@ApexChartScript()
 	@Poller()
@@ -91,7 +91,7 @@ templ DropdownItem(n int) {
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
 										})
 										.catch(error => console.error('Error:', error));`, 
-									ctxt.GetNUID(ctx), n, n) } }
+									ctxt.GetEmail(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
 		>
 			Last { strconv.Itoa(n) } Submissions
@@ -111,7 +111,7 @@ templ DisabledDropdownItem(n int) {
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
                 						})
 										.catch(error => console.error('Error:', error));`, 
-									ctxt.GetNUID(ctx), n, n) } }
+									ctxt.GetEmail(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
 			disabled
 		>
@@ -201,7 +201,7 @@ templ Poller() {
 		function startPolling() {
 			if (!intervalId) {
 				intervalId = setInterval(function() {
-					htmx.ajax('GET', `/${JSON.parse(document.getElementById('nuid').value)}/chart?limit=${JSON.parse(document.getElementById('currentLimit').value)}`, {
+					htmx.ajax('GET', `/${JSON.parse(document.getElementById('email').value)}/chart?limit=${JSON.parse(document.getElementById('currentLimit').value)}`, {
 						swap: 'none',
 						onAfterSwap: function() {
 							window.chart.updateSeries([{ data: JSON.parse(document.getElementById('data').value) }]);

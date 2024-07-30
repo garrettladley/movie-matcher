@@ -14,17 +14,17 @@ import (
 )
 
 func (s *Service) Chart(c *fiber.Ctx) error {
-	rawNUID := c.Params("nuid")
-	nuid, err := applicant.ParseNUID(rawNUID)
+	rawEmail := c.Query("email")
+	email, err := applicant.ParseNUEmail(rawEmail)
 	if err != nil {
-		return utilities.BadRequest(fmt.Errorf("failed to parse nuid. got: %s", rawNUID))
+		return utilities.BadRequest(fmt.Errorf("failed to parse email. got: %s", email))
 	}
 
-	ctxt.WithNUID(c, nuid)
+	ctxt.WithEmail(c, email)
 
 	limit := c.QueryInt("limit", 5)
 
-	submissions, err := s.storage.Status(c.Context(), nuid, limit)
+	submissions, err := s.storage.Status(c.Context(), email, limit)
 	if err != nil {
 		return err
 	}
