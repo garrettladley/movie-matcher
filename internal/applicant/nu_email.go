@@ -3,6 +3,7 @@ package applicant
 import (
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 type NUEmail string
@@ -17,7 +18,7 @@ func ParseNUEmail(str string) (NUEmail, error) {
 		return "", fmt.Errorf("invalid northeastern email. got: %s", str)
 	}
 
-	email := NUEmail(str)
+	email := NUEmail(strings.ToLower(str))
 	return email, nil
 }
 
