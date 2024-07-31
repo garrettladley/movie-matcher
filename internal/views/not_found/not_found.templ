@@ -2,18 +2,9 @@ package not_found
 
 import "movie-matcher/internal/views/layouts"
 
-templ NotFound(nuid string, nuid_error error) {
+templ NotFound(email string, email_error error) {
     @layouts.Base() {
         <div class="flex justify-center items-center h-full w-full">
-            <script>
-                function formSubmit(form) {
-                    var nuid = form.elements['nuid'].value;
-                    if (nuid) {
-                        document.location.href = '/' + nuid + '/status';
-                    }
-                    return false;
-                }
-            </script>
             <div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
                 <div class="flex justify-between">
                     <div>
@@ -30,21 +21,21 @@ templ NotFound(nuid string, nuid_error error) {
                         >
                             <div class="flex flex-col gap-2">
                                 <label class="text-sm">
-                                    Please provide your NUID to continue
+                                    Please provide a valid Northeastern email to return to the page you are looking for.
                                 </label>
                                 <input 
                                     class="p-2 border border-gray-300 rounded-md"
                                     required
-                                    name="nuid"
-                                    placeholder="NUID"
-                                    maxLength="9"
+                                    name="email"
+                                    placeholder="Email"
+                                    type="email"
                                     error
-                                    value={ nuid }
+                                    value={ email }
                                 />
                                 <div>
-                                    if nuid_error != nil {
+                                    if email_error != nil {
                                         <div class="text-red-500 font-light text-sm">
-                                            { (nuid_error).Error() }
+                                            { (email_error).Error() }
                                         </div>
                                     } else {
                                         <div class="text-gray-500">

@@ -18,7 +18,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	rawEmail := c.Query("email")
 	email, err := applicant.ParseNUEmail(rawEmail)
 	if err != nil {
-		return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("invalid northeastern email: %s", rawEmail)))
+		return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("email '%s' is not yet registered", rawEmail)))
 	}
 
 	ctxt.WithEmail(c, email)
@@ -62,7 +62,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("invalid northeastern email: %s", rawEmail)))
+			return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("email '%s' is not yet registered", rawEmail)))
 		}
 	}
 
