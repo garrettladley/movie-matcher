@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"movie-matcher/internal/algo"
@@ -66,11 +67,10 @@ type tokenResult struct {
 func (db *PostgresDB) Token(ctx context.Context, email applicant.NUEmail) (uuid.UUID, error) {
 	var dbResult tokenResult
 	if err := db.GetContext(ctx, &dbResult, "SELECT token FROM applicants WHERE email=$1;", email); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return uuid.UUID{}, utilities.NotFound("applicant")
+		}
 		return uuid.UUID{}, err
-	}
-
-	if !dbResult.Token.Valid {
-		return uuid.UUID{}, utilities.NotFound("token")
 	}
 
 	token, err := uuid.Parse(dbResult.Token.String)
@@ -84,6 +84,9 @@ func (db *PostgresDB) Token(ctx context.Context, email applicant.NUEmail) (uuid.
 func (db *PostgresDB) Name(ctx context.Context, token uuid.UUID) (applicant.Name, error) {
 	var name applicant.Name
 	if err := db.GetContext(ctx, &name, "SELECT applicant_name FROM applicants WHERE token=$1;", token); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", utilities.NotFound("applicant")
+		}
 		return "", err
 	}
 
@@ -101,6 +104,9 @@ func (db *PostgresDB) Status(ctx context.Context, token uuid.UUID, limit int) ([
         LIMIT $2
     `
 	if err := db.SelectContext(ctx, &submissions, query, token, limit); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, utilities.NotFound("submissions")
+		}
 		return nil, err
 	}
 
@@ -114,11 +120,10 @@ type promptResult struct {
 func (db *PostgresDB) Prompt(ctx context.Context, token uuid.UUID) (algo.Prompt, error) {
 	var dbResult promptResult
 	if err := db.GetContext(ctx, &dbResult, "SELECT prompt FROM applicants WHERE token=$1;", token); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return algo.Prompt{}, utilities.NotFound("prompt")
+		}
 		return algo.Prompt{}, err
-	}
-
-	if !dbResult.Prompt.Valid {
-		return algo.Prompt{}, utilities.NotFound("prompt")
 	}
 
 	var prompt algo.Prompt
@@ -136,11 +141,9 @@ type solutionResult struct {
 func (db *PostgresDB) Solution(ctx context.Context, token uuid.UUID) (ordered_set.OrderedSet[movie.ID], error) {
 	var dbResult solutionResult
 	if err := db.GetContext(ctx, &dbResult, "SELECT solution FROM applicants WHERE token=$1;", token); err != nil {
-		return ordered_set.OrderedSet[movie.ID]{}, err
-	}
-
-	if !dbResult.Solution.Valid {
-		return ordered_set.OrderedSet[movie.ID]{}, utilities.NotFound("solution")
+		if errors.Is(err, sql.ErrNoRows) {
+			return ordered_set.OrderedSet[movie.ID]{}, utilities.NotFound("solution")
+		}
 	}
 
 	var solution ordered_set.OrderedSet[movie.ID]
