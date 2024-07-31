@@ -15,7 +15,7 @@ import (
 )
 
 type registerRequest struct {
-	RawName string `json:"name"`
+	RawName  string `json:"name"`
 	RawEmail string `json:"email"`
 }
 

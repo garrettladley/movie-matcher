@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"movie-matcher/internal/duration"
@@ -115,15 +114,8 @@ func movieFromResult(res result) Movie {
 }
 
 var (
-	apiKey string
-	once   sync.Once
 	client = &apiClient{
 		apiKey: func() string {
-			once.Do(func() {
-				apiKey = os.Getenv("OMDB_API_KEY")
-			})
-
-			return apiKey
-		},
-	}
+			return os.Getenv("OMDB_API_KEY")
+		}}
 )
