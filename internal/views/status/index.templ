@@ -5,15 +5,30 @@ import (
 	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/data"
 	"movie-matcher/internal/server/ctxt"
-	"movie-matcher/internal/views/layouts"
 	"movie-matcher/internal/views/types"
 	"strconv"
+	"movie-matcher/internal/views/layouts"
 )
 
-templ Index[T types.Number](timeseries []types.TimePoint[T], name applicant.Name, currentLimit int) {
-	@layouts.Base() {
-		<div class="flex justify-center items-center h-full w-full">
-			@Chart(timeseries, name, currentLimit)
+type StatusParams[T types.Number] struct {
+	Timeseries  	[]types.TimePoint[T]
+	Name 	  		applicant.Name
+	CurrentLimit 	int
+	Token 			string
+}
+
+type StatusErrors struct {
+	Token 			string
+}
+
+templ Index[T types.Number](params StatusParams[T], errs StatusErrors) {
+	@layouts.Base(){
+		<div id="status-container" class="flex justify-center items-center h-full w-full">
+			if len(errs.Token) > 0 {
+				@UserStatusSearch(params.Token, errs.Token)
+			} else {
+				@Chart(params.Timeseries, params.Name, params.CurrentLimit)
+			}
 		</div>
 	}
 }
@@ -24,11 +39,11 @@ templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name
 		<div id="area-chart"></div>
 		@ChartFooter(currentLimit)
 	</div>
+	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
+	<data id="token" value={ templ.JSONString(ctxt.GetToken(ctx)) }></data>
+	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>
 	<script src="/deps/flowbite.min.js"></script>
 	<script src="/deps/apexcharts.min.js"></script>
-	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
-	<data id="email" value={ templ.JSONString(ctxt.GetEmail(ctx)) }></data>
-	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>
 	@ApexChartScript()
 	@Poller()
 }
@@ -91,7 +106,7 @@ templ DropdownItem(n int) {
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
 										})
 										.catch(error => console.error('Error:', error));`, 
-									ctxt.GetEmail(ctx), n, n) } }
+									ctxt.GetToken(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
 		>
 			Last { strconv.Itoa(n) } Submissions
@@ -111,7 +126,7 @@ templ DisabledDropdownItem(n int) {
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
                 						})
 										.catch(error => console.error('Error:', error));`, 
-									ctxt.GetEmail(ctx), n, n) } }
+									ctxt.GetToken(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
 			disabled
 		>
@@ -119,6 +134,36 @@ templ DisabledDropdownItem(n int) {
 		</a>
 	</li>
 }
+
+templ UserStatusSearch(invalidToken string, tokenError string) {
+    <form 
+		class="max-w-md w-full flex flex-col gap-2 bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6"
+	>
+        <label class="text-sm text-gray-500">
+            Search User by Challenge Token
+        </label>
+        <input 
+            class="p-2 border border-gray-300 rounded-md w-full"
+            required
+            name="token"
+            placeholder="Token"
+            error
+            value={ invalidToken }
+        />
+        if len(tokenError) > 0 && invalidToken != "" {
+            <label class="text-red-500 text-sm">
+                { tokenError }
+            </label>
+        }
+        <button 
+            class="bg-blue-500 text-white rounded-xl p-2 text-center hover:bg-blue-400 transition-all cursor-pointer"
+			type="submit"
+        >
+            View Status
+        </button>
+    </form>
+}
+
 
 templ ApexChartScript() {
 	<script type="text/javascript">

@@ -1,27 +1,33 @@
 package handlers
 
 import (
-	"fmt"
 	"sync"
 
 	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/model"
 	"movie-matcher/internal/server/ctxt"
 	"movie-matcher/internal/utilities"
-	"movie-matcher/internal/views/not_found"
 	"movie-matcher/internal/views/status"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func (s *Service) Status(c *fiber.Ctx) error {
-	rawEmail := c.Query("email")
-	email, err := applicant.ParseNUEmail(rawEmail)
+	rawToken := c.Query("token")
+	token, err := uuid.Parse(rawToken)
+
+	var params status.StatusParams[int]
+	params.Token = rawToken
+
+	var errs status.StatusErrors
+
 	if err != nil {
-		return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("email '%s' is not yet registered", rawEmail)))
+		errs.Token = "The token provided does not match the expected format."
+		return utilities.IntoTempl(c, status.Index(params, errs))
 	}
 
-	ctxt.WithEmail(c, email)
+	ctxt.WithToken(c, token)
 
 	limit := c.QueryInt("limit", 5)
 
@@ -36,7 +42,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		submissions, err := s.storage.Status(c.Context(), email, limit)
+		submissions, err := s.storage.Status(c.Context(), token, limit)
 		if err != nil {
 			errCh <- err
 			return
@@ -47,7 +53,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		name, err := s.storage.Name(c.Context(), email)
+		name, err := s.storage.Name(c.Context(), token)
 		if err != nil {
 			errCh <- err
 			return
@@ -62,9 +68,15 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("email '%s' is not yet registered", rawEmail)))
+			errs.Token = "The provided token is invalid."
+			return utilities.IntoTempl(c, status.Index(params, errs))
 		}
 	}
+	
+	params.Token = token.String()
+	params.Timeseries = intoTimePoints(<-submissionsCh)
+	params.Name = <-nameCh
+	params.CurrentLimit = limit
 
-	return utilities.IntoTempl(c, status.Index(intoTimePoints(<-submissionsCh), <-nameCh, limit))
+	return utilities.IntoTempl(c, status.Index(params, errs))
 }

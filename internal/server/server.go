@@ -95,6 +95,7 @@ func Setup(settings config.Settings) *fiber.App {
 			r.Get("favicon.ico", x404)
 			r.Get("/deps/flowbite.min.js.map", x404)
 			r.Post("register", service.Register)
+			r.Get("", service.Home)
 			r.Get("token", service.Token)
 			r.Get("chart", service.Chart)
 			r.Get("status", service.Status)
@@ -112,7 +113,7 @@ func Setup(settings config.Settings) *fiber.App {
 		if _, ok := staticPaths[c.OriginalURL()]; ok {
 			return c.Next()
 		}
-		return utilities.IntoTempl(c, not_found.NotFound("", nil))
+		return utilities.IntoTempl(c, not_found.Index())
 	})
 
 	return app
