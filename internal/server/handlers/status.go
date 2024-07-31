@@ -69,7 +69,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	for err := range errCh {
 		if err != nil {
 			if utilities.IsNotFound(err) {
-				// TODO: render a button to prompt to register?
+				// TODO: render a button to take to the docs section on how to register?
 				return utilities.IntoTempl(
 					c,
 					not_found.NotFound(
