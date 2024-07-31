@@ -27,12 +27,21 @@
               '';
               languages = {
                 go.enable = true;
+                javascript = {
+                  enable = true;
+                  npm = {
+                    enable = true;
+                    install.enable = true;
+                  };
+                };
                 nix.enable = true;
+                typescript.enable = true;
               };
               packages = with pkgs; [
                 commitizen
                 gnumake
                 golangci-lint
+                wget
               ];
               pre-commit = {
                 default_stages = ["pre-push"];
