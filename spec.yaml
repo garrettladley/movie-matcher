@@ -1,11 +1,3 @@
-databases:
-- cluster_name: app-755eaa6d-90d8-4fdd-ba7f-bbde23d5a448
-  db_name: moviematcherdb
-  db_user: moviematcherdb
-  engine: PG
-  name: moviematcherdb
-  production: true
-  version: "16"
 ingress:
   rules:
   - component:
@@ -21,21 +13,6 @@ services:
   - key: APP_APPLICATION__BASE_URL
     scope: RUN_TIME
     value: ${APP_URL}
-  - key: APP_DATABASE__USERNAME
-    scope: RUN_TIME
-    value: ${moviematcherdb.USERNAME}
-  - key: APP_DATABASE__PASSWORD
-    scope: RUN_TIME
-    value: ${moviematcherdb.PASSWORD}
-  - key: APP_DATABASE__HOST
-    scope: RUN_TIME
-    value: ${moviematcherdb.HOSTNAME}
-  - key: APP_DATABASE__PORT
-    scope: RUN_TIME
-    value: ${moviematcherdb.PORT}
-  - key: APP_DATABASE__DATABASE_NAME
-    scope: RUN_TIME
-    value: ${moviematcherdb.DATABASE}
   github:
     branch: main
     deploy_on_push: true
