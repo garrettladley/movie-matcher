@@ -201,7 +201,7 @@ templ Poller() {
 		function startPolling() {
 			if (!intervalId) {
 				intervalId = setInterval(function() {
-					htmx.ajax('GET', `/${JSON.parse(document.getElementById('email').value)}/chart?limit=${JSON.parse(document.getElementById('currentLimit').value)}`, {
+					htmx.ajax('GET', `/chart?email=${JSON.parse(document.getElementById('email').value)}&limit=${JSON.parse(document.getElementById('currentLimit').value)}`, {
 						swap: 'none',
 						onAfterSwap: function() {
 							window.chart.updateSeries([{ data: JSON.parse(document.getElementById('data').value) }]);
