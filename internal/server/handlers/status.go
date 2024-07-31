@@ -15,13 +15,13 @@ import (
 )
 
 func (s *Service) Status(c *fiber.Ctx) error {
-	rawNUID := c.Params("nuid")
-	nuid, err := applicant.ParseNUID(rawNUID)
+	rawEmail := c.Query("email")
+	email, err := applicant.ParseNUEmail(rawEmail)
 	if err != nil {
-		return utilities.IntoTempl(c, not_found.NotFound(rawNUID, fmt.Errorf("invalid NUID: %s", rawNUID)))
+		return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("invalid northeastern email: %s", rawEmail)))
 	}
 
-	ctxt.WithNUID(c, nuid)
+	ctxt.WithEmail(c, email)
 
 	limit := c.QueryInt("limit", 5)
 
@@ -36,7 +36,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		submissions, err := s.storage.Status(c.Context(), nuid, limit)
+		submissions, err := s.storage.Status(c.Context(), email, limit)
 		if err != nil {
 			errCh <- err
 			return
@@ -47,7 +47,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		name, err := s.storage.Name(c.Context(), nuid)
+		name, err := s.storage.Name(c.Context(), email)
 		if err != nil {
 			errCh <- err
 			return
@@ -62,7 +62,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			return utilities.IntoTempl(c, not_found.NotFound(rawNUID, fmt.Errorf("invalid NUID: %s", rawNUID)))
+			return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("invalid northeastern email: %s", rawEmail)))
 		}
 	}
 

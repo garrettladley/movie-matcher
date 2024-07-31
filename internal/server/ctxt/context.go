@@ -8,16 +8,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type contextKey byte
+type emailKey struct{}
 
-const (
-	contextKeyNUID contextKey = iota
-)
-
-func WithNUID(c *fiber.Ctx, nuid applicant.NUID) {
-	c.Locals(contextKeyNUID, nuid)
+func WithEmail(c *fiber.Ctx, email applicant.NUEmail) {
+	c.Locals(emailKey{}, email)
 }
 
-func GetNUID(ctx context.Context) applicant.NUID {
-	return ctx.Value(contextKeyNUID).(applicant.NUID)
+func GetEmail(ctx context.Context) applicant.NUEmail {
+	return ctx.Value(emailKey{}).(applicant.NUEmail)
 }

@@ -28,7 +28,7 @@ func NewPostgresDB(settings config.DatabaseSettings) *PostgresDB {
 	return &PostgresDB{sqlx.MustConnect("postgres", settings.WithDb())}
 }
 
-func (db *PostgresDB) Register(ctx context.Context, nuid applicant.NUID, name applicant.Name, createdAt time.Time, token uuid.UUID, prompt algo.Prompt, solution ordered_set.OrderedSet[movie.ID]) error {
+func (db *PostgresDB) Register(ctx context.Context, email applicant.NUEmail, name applicant.Name, createdAt time.Time, token uuid.UUID, prompt algo.Prompt, solution ordered_set.OrderedSet[movie.ID]) error {
 	marshalledPrompt, err := go_json.Marshal(prompt)
 	if err != nil {
 		return err
@@ -41,8 +41,8 @@ func (db *PostgresDB) Register(ctx context.Context, nuid applicant.NUID, name ap
 
 	if _, err := db.ExecContext(
 		ctx,
-		"INSERT INTO applicants (nuid, applicant_name, created_at, token, prompt, solution) VALUES ($1, $2, $3, $4, $5, $6);",
-		nuid,
+		"INSERT INTO applicants (email, applicant_name, created_at, token, prompt, solution) VALUES ($1, $2, $3, $4, $5, $6);",
+		email,
 		name,
 		createdAt,
 		token,
@@ -50,7 +50,7 @@ func (db *PostgresDB) Register(ctx context.Context, nuid applicant.NUID, name ap
 		marshalledRanking,
 	); err != nil {
 		if db.isUniqueViolation(err) {
-			return utilities.Conflict("user", "nuid")
+			return utilities.Conflict("user", "email")
 		} else {
 			return err
 		}
@@ -63,9 +63,9 @@ type tokenResult struct {
 	Token sql.NullString `db:"token"`
 }
 
-func (db *PostgresDB) Token(ctx context.Context, nuid applicant.NUID) (uuid.UUID, error) {
+func (db *PostgresDB) Token(ctx context.Context, email applicant.NUEmail) (uuid.UUID, error) {
 	var dbResult tokenResult
-	if err := db.GetContext(ctx, &dbResult, "SELECT token FROM applicants WHERE nuid=$1;", nuid); err != nil {
+	if err := db.GetContext(ctx, &dbResult, "SELECT token FROM applicants WHERE email=$1;", email); err != nil {
 		return uuid.UUID{}, err
 	}
 
@@ -81,26 +81,26 @@ func (db *PostgresDB) Token(ctx context.Context, nuid applicant.NUID) (uuid.UUID
 	return token, nil
 }
 
-func (db *PostgresDB) Name(ctx context.Context, nuid applicant.NUID) (applicant.Name, error) {
+func (db *PostgresDB) Name(ctx context.Context, email applicant.NUEmail) (applicant.Name, error) {
 	var name applicant.Name
-	if err := db.GetContext(ctx, &name, "SELECT applicant_name FROM applicants WHERE nuid=$1;", nuid); err != nil {
+	if err := db.GetContext(ctx, &name, "SELECT applicant_name FROM applicants WHERE email=$1;", email); err != nil {
 		return "", err
 	}
 
 	return name, nil
 }
 
-func (db *PostgresDB) Status(ctx context.Context, nuid applicant.NUID, limit int) ([]model.Submission, error) {
+func (db *PostgresDB) Status(ctx context.Context, email applicant.NUEmail, limit int) ([]model.Submission, error) {
 	var submissions []model.Submission
 	query := `
         SELECT s.score, s.submission_time
         FROM submissions s
         INNER JOIN applicants a ON s.token = a.token
-        WHERE a.nuid = $1
+        WHERE a.email = $1
         ORDER BY s.submission_time DESC
         LIMIT $2
     `
-	if err := db.SelectContext(ctx, &submissions, query, nuid, limit); err != nil {
+	if err := db.SelectContext(ctx, &submissions, query, email, limit); err != nil {
 		return nil, err
 	}
 

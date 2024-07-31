@@ -122,6 +122,7 @@ var (
 			once.Do(func() {
 				apiKey = os.Getenv("OMDB_API_KEY")
 			})
+
 			return apiKey
 		},
 	}

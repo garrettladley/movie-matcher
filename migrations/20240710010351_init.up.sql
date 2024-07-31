@@ -1,9 +1,9 @@
-CREATE DOMAIN nuid_domain AS varchar(9) CHECK (value ~ '^[0-9]{9}$');
+CREATE DOMAIN nu_email_domain AS varchar(64) CHECK (value ~ '^[a-zA-Z]+\.[a-zA-Z]+@northeastern\.edu$');
 
 CREATE DOMAIN applicant_name_domain AS varchar(256) CHECK (value !~ '[/()"<>\\{}]');
 
 CREATE TABLE IF NOT EXISTS applicants (
-    nuid nuid_domain PRIMARY KEY,
+    email nu_email_domain PRIMARY KEY,
     applicant_name applicant_name_domain NOT NULL,
     created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
     token uuid UNIQUE NOT NULL,
