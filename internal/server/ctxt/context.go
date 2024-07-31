@@ -11,13 +11,13 @@ import (
 type contextKey byte
 
 const (
-	contextKeyNUID contextKey = iota
+	contextKeyEmail contextKey = iota
 )
 
-func WithNUID(c *fiber.Ctx, nuid applicant.NUID) {
-	c.Locals(contextKeyNUID, nuid)
+func WithEmail(c *fiber.Ctx, email applicant.NUEmail) {
+	c.Locals(contextKeyEmail, email)
 }
 
-func GetNUID(ctx context.Context) applicant.NUID {
-	return ctx.Value(contextKeyNUID).(applicant.NUID)
+func GetEmail(ctx context.Context) applicant.NUEmail {
+	return ctx.Value(contextKeyEmail).(applicant.NUEmail)
 }

@@ -14,13 +14,13 @@ import (
 )
 
 func (s *Service) Status(c *fiber.Ctx) error {
-	rawNUID := c.Params("nuid")
-	nuid, err := applicant.ParseNUID(rawNUID)
+	rawEmail := c.Query("email")
+	email, err := applicant.ParseNUEmail(rawEmail)
 	if err != nil {
-		return utilities.BadRequest(fmt.Errorf("failed to parse nuid. got: %s", rawNUID))
+		return utilities.BadRequest(fmt.Errorf("failed to parse email. got: %s", email))
 	}
 
-	ctxt.WithNUID(c, nuid)
+	ctxt.WithEmail(c, email)
 
 	limit := c.QueryInt("limit", 5)
 
@@ -35,7 +35,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		submissions, err := s.storage.Status(c.Context(), nuid, limit)
+		submissions, err := s.storage.Status(c.Context(), email, limit)
 		if err != nil {
 			errCh <- err
 			return
@@ -46,7 +46,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		name, err := s.storage.Name(c.Context(), nuid)
+		name, err := s.storage.Name(c.Context(), email)
 		if err != nil {
 			errCh <- err
 			return

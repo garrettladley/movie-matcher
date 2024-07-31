@@ -11,13 +11,13 @@ import (
 )
 
 func (s *Service) Token(c *fiber.Ctx) error {
-	rawNUID := c.Params("nuid")
-	nuid, err := applicant.ParseNUID(rawNUID)
+	rawEmail := c.Query("email")
+	email, err := applicant.ParseNUEmail(rawEmail)
 	if err != nil {
-		return utilities.BadRequest(fmt.Errorf("failed to parse nuid. got: %s", rawNUID))
+		return utilities.BadRequest(fmt.Errorf("failed to parse email. got: %s", email))
 	}
 
-	token, err := s.storage.Token(c.Context(), nuid)
+	token, err := s.storage.Token(c.Context(), email)
 	if err != nil {
 		return err
 	}
