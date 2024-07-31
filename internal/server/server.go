@@ -112,7 +112,7 @@ func Setup(settings config.Settings) *fiber.App {
 		if _, ok := staticPaths[c.OriginalURL()]; ok {
 			return c.Next()
 		}
-		return utilities.IntoTempl(c, not_found.NotFound("", nil))
+		return utilities.IntoTempl(c, not_found.NotFound(not_found.Params{}, not_found.Errors{}))
 	})
 
 	return app

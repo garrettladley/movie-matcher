@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 
 	"movie-matcher/internal/applicant"
@@ -16,9 +17,14 @@ import (
 
 func (s *Service) Status(c *fiber.Ctx) error {
 	rawEmail := c.Query("email")
-	email, err := applicant.ParseNUEmail(rawEmail)
+	email, err := applicant.ParseNUEmail(strings.TrimSpace(rawEmail))
 	if err != nil {
-		return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("email '%s' is not yet registered", rawEmail)))
+		return utilities.IntoTempl(
+			c,
+			not_found.NotFound(
+				not_found.Params{Email: rawEmail},
+				not_found.Errors{Email: err.Error()}),
+		)
 	}
 
 	ctxt.WithEmail(c, email)
@@ -62,7 +68,16 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			return utilities.IntoTempl(c, not_found.NotFound(rawEmail, fmt.Errorf("email '%s' is not yet registered", rawEmail)))
+			if utilities.IsNotFound(err) {
+				// TODO: render a button to prompt to register?
+				return utilities.IntoTempl(
+					c,
+					not_found.NotFound(
+						not_found.Params{Email: rawEmail},
+						not_found.Errors{Email: fmt.Sprintf("user with email %s not found, have you registered?", rawEmail)}),
+				)
+			}
+			return err
 		}
 	}
 
