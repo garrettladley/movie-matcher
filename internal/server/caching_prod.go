@@ -32,6 +32,8 @@ func createCacheNextFunction(storage *memory.Storage, keyGenerator func(c *fiber
 		"/deps/htmx.min.js":       {},
 		"/deps/flowbite.min.js":   {},
 		"/public/styles.css":      {},
+		"/":                       {},
+		"/challenges/backend":     {},
 	}
 
 	return func(c *fiber.Ctx) bool {

@@ -63,6 +63,9 @@ func createService(settings config.Settings) *handlers.Service {
 
 func setupRoutes(app *fiber.App, service *handlers.Service) {
 	app.Route("/", func(r fiber.Router) {
+		r.Route("challenges", func(r fiber.Router) {
+			r.Get("backend", service.Backend)
+		})
 		r.Get("favicon.ico", x404)
 		r.Get("/deps/flowbite.min.js.map", x404)
 		r.Post("register", service.Register)
