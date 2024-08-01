@@ -14,14 +14,10 @@ type StatusParams[T types.Number] struct {
 	Timeseries  	[]types.TimePoint[T]
 	Name 	  		applicant.Name
 	CurrentLimit 	int
-	Token 			string
+	Email 			applicant.NUEmail
 }
 
-type StatusErrors struct {
-	Token 			string
-}
-
-templ Index[T types.Number](params StatusParams[T], errs StatusErrors) {
+templ Index[T types.Number](params StatusParams[T]) {
 	@layouts.Base(){
 		<div id="status-container" class="flex justify-center items-center h-full w-full">
 			@Chart(params.Timeseries, params.Name, params.CurrentLimit)
@@ -36,7 +32,7 @@ templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name
 		@ChartFooter(currentLimit)
 	</div>
 	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
-	<data id="token" value={ templ.JSONString(ctxt.GetToken(ctx)) }></data>
+	<data id="token" value={ templ.JSONString(ctxt.GetEmail(ctx)) }></data>
 	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>
 	<script src="/deps/flowbite.min.js"></script>
 	<script src="/deps/apexcharts.min.js"></script>
@@ -102,7 +98,7 @@ templ DropdownItem(n int) {
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
 										})
 										.catch(error => console.error('Error:', error));`, 
-									ctxt.GetToken(ctx), n, n) } }
+									ctxt.GetEmail(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
 		>
 			Last { strconv.Itoa(n) } Submissions
@@ -122,7 +118,7 @@ templ DisabledDropdownItem(n int) {
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
                 						})
 										.catch(error => console.error('Error:', error));`, 
-									ctxt.GetToken(ctx), n, n) } }
+									ctxt.GetEmail(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
 			disabled
 		>

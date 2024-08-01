@@ -11,26 +11,23 @@ import (
 	"movie-matcher/internal/views/status"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 func (s *Service) Status(c *fiber.Ctx) error {
-	rawToken := c.Query("token")
-	token, err := uuid.Parse(rawToken)
+	rawEmail := c.Query("email")
+	email, err := applicant.ParseNUEmail(rawEmail)
 
 	notFoundParams := not_found.NotFoundParams{
-		Token: rawToken,
+		Email: rawEmail,
 	}
 	var notFoundErrs not_found.NotFoundErrors
 
-	var errs status.StatusErrors
-
 	if err != nil {
-		notFoundErrs.Token = "The token provided does not match the expected format."
+		notFoundErrs.Email = "The email provided is not a valid @northeastern.edu address"
 		return utilities.IntoTempl(c, not_found.Index(notFoundParams, notFoundErrs))
 	}
 
-	ctxt.WithToken(c, token)
+	ctxt.WithEmail(c, email)
 
 	limit := c.QueryInt("limit", 5)
 
@@ -45,7 +42,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		submissions, err := s.storage.Status(c.Context(), token, limit)
+		submissions, err := s.storage.Status(c.Context(), email, limit)
 		if err != nil {
 			errCh <- err
 			return
@@ -56,7 +53,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		name, err := s.storage.Name(c.Context(), token)
+		name, err := s.storage.Name(c.Context(), email)
 		if err != nil {
 			errCh <- err
 			return
@@ -71,17 +68,17 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			notFoundErrs.Token = "The provided token is invalid."
+			notFoundErrs.Email = "The provided email is not registered."
 			return utilities.IntoTempl(c, not_found.Index(notFoundParams, notFoundErrs))
 		}
 	}
 	
 	params := status.StatusParams[int]{
-		Token: token.String(),
+		Email: email,
 		Timeseries: intoTimePoints(<-submissionsCh),
 		Name: <-nameCh,
 		CurrentLimit: limit,
 	}
 
-	return utilities.IntoTempl(c, status.Index(params, errs))
+	return utilities.IntoTempl(c, status.Index(params))
 }

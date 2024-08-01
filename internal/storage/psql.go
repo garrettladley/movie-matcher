@@ -81,9 +81,9 @@ func (db *PostgresDB) Token(ctx context.Context, email applicant.NUEmail) (uuid.
 	return token, nil
 }
 
-func (db *PostgresDB) Name(ctx context.Context, token uuid.UUID) (applicant.Name, error) {
+func (db *PostgresDB) Name(ctx context.Context, email applicant.NUEmail) (applicant.Name, error) {
 	var name applicant.Name
-	if err := db.GetContext(ctx, &name, "SELECT applicant_name FROM applicants WHERE token=$1;", token); err != nil {
+	if err := db.GetContext(ctx, &name, "SELECT applicant_name FROM applicants WHERE email=$1;", email); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return "", utilities.NotFound("applicant")
 		}
@@ -93,17 +93,17 @@ func (db *PostgresDB) Name(ctx context.Context, token uuid.UUID) (applicant.Name
 	return name, nil
 }
 
-func (db *PostgresDB) Status(ctx context.Context, token uuid.UUID, limit int) ([]model.Submission, error) {
+func (db *PostgresDB) Status(ctx context.Context, email applicant.NUEmail, limit int) ([]model.Submission, error) {
 	var submissions []model.Submission
 	query := `
         SELECT s.score, s.submission_time
         FROM submissions s
         INNER JOIN applicants a ON s.token = a.token
-        WHERE a.token = $1
+        WHERE a.email = $1
         ORDER BY s.submission_time DESC
         LIMIT $2
     `
-	if err := db.SelectContext(ctx, &submissions, query, token, limit); err != nil {
+	if err := db.SelectContext(ctx, &submissions, query, email, limit); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, utilities.NotFound("submissions")
 		}

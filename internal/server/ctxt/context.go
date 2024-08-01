@@ -2,17 +2,17 @@ package ctxt
 
 import (
 	"context"
+	"movie-matcher/internal/applicant"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
-type tokenKey struct{}
+type emailKey struct{}
 
-func WithToken(c *fiber.Ctx, token uuid.UUID) {
-	c.Locals(tokenKey{}, token)
+func WithEmail(c *fiber.Ctx, email applicant.NUEmail) {
+	c.Locals(emailKey{}, email)
 }
 
-func GetToken(ctx context.Context) uuid.UUID {
-	return ctx.Value(tokenKey{}).(uuid.UUID)
+func GetEmail(ctx context.Context) applicant.NUEmail {
+	return ctx.Value(emailKey{}).(applicant.NUEmail)
 }

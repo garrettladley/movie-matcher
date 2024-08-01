@@ -3,11 +3,11 @@ package not_found
 import "movie-matcher/internal/views/layouts"
 
 type NotFoundParams struct {
-    Token string
+    Email string
 }
 
 type NotFoundErrors struct {
-    Token string
+    Email string
 }
 
 templ Index(params NotFoundParams, errs NotFoundErrors) {
@@ -18,7 +18,7 @@ templ Index(params NotFoundParams, errs NotFoundErrors) {
                     404 Not Found
                 </h2>
                 <div class="flex flex-col gap-4 border-gray-200 border-t dark:border-gray-700 pt-4 pb-4">
-                    @UserStatusSearch(params.Token, errs.Token)
+                    @UserStatusSearch(params.Email, errs.Email)
                     <p class="self-center"> 
                         OR
                     </p>
@@ -37,24 +37,24 @@ templ Index(params NotFoundParams, errs NotFoundErrors) {
     }
 }
 
-templ UserStatusSearch(invalidToken string, tokenError string) {
+templ UserStatusSearch(invalidEmail string, emailError string) {
     <form 
 		class="flex flex-col gap-4"
 	>
         <label class="text-sm text-gray-500">
-            Search User by Challenge Token
+            Search User by Email
         </label>
         <input 
             class="p-2 border border-gray-300 rounded-md w-full"
             required
-            name="token"
-            placeholder="Token"
+            name="email"
+            placeholder="Email"
             error
-            value={ invalidToken }
+            value={ invalidEmail }
         />
-        if len(tokenError) > 0 && invalidToken != "" {
+        if len(emailError) > 0 && invalidEmail != "" {
             <label class="text-red-500 text-sm">
-                { tokenError }
+                { emailError }
             </label>
         }
         <button 
