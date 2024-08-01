@@ -39,8 +39,10 @@
               };
               packages = with pkgs; [
                 commitizen
+                docker
                 gnumake
                 golangci-lint
+                postgresql
                 wget
               ];
               pre-commit = {

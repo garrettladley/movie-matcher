@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"movie-matcher/internal/config"
+	"movie-matcher/internal/constants"
 	"movie-matcher/internal/server/handlers"
 	"movie-matcher/internal/services/omdb"
 	"movie-matcher/internal/storage"
@@ -62,20 +63,28 @@ func createService(settings config.Settings) *handlers.Service {
 }
 
 func setupRoutes(app *fiber.App, service *handlers.Service) {
-	app.Route("/", func(r fiber.Router) {
-		r.Get("favicon.ico", x404)
-		r.Get("/deps/flowbite.min.js.map", x404)
-		r.Post("register", service.Register)
-		r.Get("token", service.Token)
-		r.Get("chart", service.Chart)
-		r.Get("status", service.Status)
-		r.Route(":token", func(r fiber.Router) {
-			r.Get("prompt", service.Prompt)
-			r.Post("submit", service.Submit)
+	app.Get("/", service.Index)
+	app.Get("/favicon.ico", x404)
+	app.Get("/deps/flowbite.min.js.map", x404)
+	app.Post("/register", service.Register)
+	app.Get("/token", service.Token)
+	app.Get("/chart", service.Chart)
+	app.Get("/status", service.Status)
+
+	app.Route("/challenges", func(r fiber.Router) {
+		r.Get("/backend", service.Backend)
+		r.Get("/frontend", func(c *fiber.Ctx) error {
+			return c.Redirect(constants.FrontendChallengeURL, http.StatusTemporaryRedirect)
 		})
-		r.Route("frontend", func(r fiber.Router) {
-			r.Get("movies", service.Frontend)
-		})
+	})
+
+	app.Route("/:token", func(r fiber.Router) {
+		r.Get("/prompt", service.Prompt)
+		r.Post("/submit", service.Submit)
+	})
+
+	app.Route("/frontend", func(r fiber.Router) {
+		r.Get("/movies", service.Frontend)
 	})
 }
 
