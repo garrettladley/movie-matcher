@@ -1,8 +1,6 @@
 package backend
 
-import (
-	"movie-matcher/internal/views/layouts"
-)
+import "movie-matcher/internal/views/layouts"
 
 templ Backend() {
 	@layouts.Base() {
@@ -11,64 +9,81 @@ templ Backend() {
 			<h2 class="font-bold sm:text-5xl text-3xl my-2"><span class="text-[#ffbf3c]">Software</span> Fall '24</h2>
 			<h2 class="font-semibold text-3xl mt-28 mb-6"><span class="text-[#187dff]">Backend</span> Engineering Challenge</h2>
 			<ul class="text-left space-y-6">
-			<li class="bg-gray-100 p-6">
-				<h3 class="font-semibold text-2xl">Task</h3>
-				<p class="max-w-xl my-2"><code>
-					It's Generate Movie Night!! <span class="text-blue-400">Software Director Linwood</span> has tasked you with selecting a movie to watch,
-					but all of our movie watcher's are <span class="text-red-400">very picky!</span> Can we generate a solution?
-					<br><br>
-					Every attendee has their own unique preferences, and we have a limited selection of movies available.
-					We <span class="text-red-400">can't perfectly satisfy everyone</span>, but we
-					<span class="text-green-400">can rank our options by how well they satisfy the group</span>.
-					<br><br>
-					Develop a program that <span class="font-bold">retrieves a list of movies and people</span> from Generate's server,
-					uses a custom algorithm to <span class="font-bold">determine an optimal ranking</span>,
-					and <span class="font-bold">submits that ranking</span> to the server.
-				</code></p>
-			</li>
-			<li class="bg-gray-100 p-6">
-				<h3 class="font-semibold text-2xl">Details</h3>
-				<p class="max-w-xl my-2"><code>
-					The movies you receive are represented by <a class="text-blue-400 underline" href="https://developer.imdb.com/documentation/key-concepts">IMDb IDs</a>.
-					You can use any solution to retrieve movie information from those IDs, but we recommend using the
-					<span class="font-bold">FREE</span> <a class="text-blue-400 underline" href="https://www.omdbapi.com/">OMDb API</a>.
-					<br><br>
-					Movie watchers are <span class="text-red-400">not guaranteed</span> to have specific preferences. It is <span class="text-red-400">up to you</span>
-					to dynamically determine what they like/dislike by examining the data you are provided, and writing safe code.
-					<br><br>
-					How you interpret the preferences is <span class="text-red-400">up to you!</span>
-					Write an algorithm that makes sense to <span class="font-bold">YOU</span>.
-					<br><br>
-					Your solution will be scored based on how close your ranking matches our internal solution.
-					<span class="text-green-400">Lower scores are better</span>, and a 0 is perfect,
-					but remember, score is <span class="font-bold">NOT</span> the only factor we evaluate.
-				</code></p>
-			</li>
-			<li class="bg-gray-100 p-6">
-				<h3 class="font-semibold text-2xl">Register</h3>
-				<p class="max-w-xl my-2"><code>
-					- #TODO: Garrett plz fill in
-				</code></p>
-			</li>
-			<li class="bg-gray-100 p-6">
-				<h3 class="font-semibold text-2xl">Submit</h3>
-				<p class="max-w-xl my-2"><code>
-					- #TODO: Garrett plz fill in
-				</code></p>
-			</li>
-			<li class="bg-gray-100 p-6">
-				<h3 class="font-semibold text-2xl">API Overview</h3>
-				<p class="max-w-xl my-2"><code>
-					- #TODO: Garrett plz fill in
-				</code></p>
-			</li>
+				<li class="bg-gray-100 p-6">
+					<h3 class="font-semibold text-2xl">Task</h3>
+					<p class="max-w-xl my-2">
+						<code>
+							It's Generate Movie Night!! <span class="text-blue-400">Software Director Linwood</span> has tasked you with selecting a movie to watch,
+							but all of our movie watcher's are <span class="text-red-400">very picky!</span> Can we generate a solution?
+							<br/>
+							<br/>
+							Every attendee has their own unique preferences, and we have a limited selection of movies available.
+							We <span class="text-red-400">can't perfectly satisfy everyone</span>, but we
+							<span class="text-green-400">can rank our options by how well they satisfy the group</span>.
+							<br/>
+							<br/>
+							Develop a program that <span class="font-bold">retrieves a list of movies and people</span> from Generate's server,
+							uses a custom algorithm to <span class="font-bold">determine an optimal ranking</span>,
+							and <span class="font-bold">submits that ranking</span> to the server.
+						</code>
+					</p>
+				</li>
+				<li class="bg-gray-100 p-6">
+					<h3 class="font-semibold text-2xl">Details</h3>
+					<p class="max-w-xl my-2">
+						<code>
+							The movies you receive are represented by <a class="text-blue-400 underline" href="https://developer.imdb.com/documentation/key-concepts">IMDb IDs</a>.
+							You can use any solution to retrieve movie information from those IDs, but we recommend using the
+							<span class="font-bold">FREE</span> <a class="text-blue-400 underline" href="https://www.omdbapi.com/">OMDb API</a>.
+							<br/>
+							<br/>
+							Movie watchers are <span class="text-red-400">not guaranteed</span> to have specific preferences. It is <span class="text-red-400">up to you</span>
+							to dynamically determine what they like/dislike by examining the data you are provided, and writing safe code.
+							<br/>
+							<br/>
+							How you interpret the preferences is <span class="text-red-400">up to you!</span>
+							Write an algorithm that makes sense to <span class="font-bold">YOU</span>.
+							<br/>
+							<br/>
+							Your solution will be scored based on how close your ranking matches our internal solution.
+							<span class="text-green-400">Lower scores are better</span>, and a 0 is perfect,
+							but remember, score is <span class="font-bold">NOT</span> the only factor we evaluate.
+						</code>
+					</p>
+				</li>
+				<li class="bg-gray-100 p-6">
+					<h3 class="font-semibold text-2xl">Register</h3>
+					<p class="max-w-xl my-2">
+						<code>
+							- #TODO: Garrett plz fill in
+						</code>
+					</p>
+				</li>
+				<li class="bg-gray-100 p-6">
+					<h3 class="font-semibold text-2xl">Submit</h3>
+					<p class="max-w-xl my-2">
+						<code>
+							- #TODO: Garrett plz fill in
+						</code>
+					</p>
+				</li>
+				<li class="bg-gray-100 p-6">
+					<h3 class="font-semibold text-2xl">API Overview</h3>
+					<p class="max-w-xl my-2">
+						<code>
+							- #TODO: Garrett plz fill in
+						</code>
+					</p>
+				</li>
 			</ul>
-			<p class="max-w-2xl mt-12 p-6"><code>
-				If you have any questions or concerns about the challenge, please email
-				<span class="text-red-400">ladley.g@northeastern.edu</span>,
-				<span class="text-red-400">terrill.j@northeastern.edu</span>, or
-				<span class="text-red-400">whiteford.a@northeastern.edu</span>
-			</code></p>
+			<p class="max-w-2xl mt-12 p-6">
+				<code>
+					If you have any questions or concerns about the challenge, please email
+					<span class="text-red-400">ladley.g@northeastern.edu</span>,
+					<span class="text-red-400">terrill.j@northeastern.edu</span>, or
+					<span class="text-red-400">whiteford.a@northeastern.edu</span>
+				</code>
+			</p>
 		</div>
 	}
 }
