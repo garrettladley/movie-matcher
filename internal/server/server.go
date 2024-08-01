@@ -24,8 +24,9 @@ func Setup(settings config.Settings) *fiber.App {
 	setupMiddleware(app)
 	setupHealthCheck(app)
 	service := createService(settings)
-	setupCaching(app)
+	staticPaths := setupCaching(app)
 	setupRoutes(app, service)
+	setupNotFoundRoute(app, staticPaths)
 	return app
 }
 
@@ -78,6 +79,15 @@ func setupRoutes(app *fiber.App, service *handlers.Service) {
 		r.Route("frontend", func(r fiber.Router) {
 			r.Get("movies", service.Frontend)
 		})
+	})
+}
+
+func setupNotFoundRoute(app *fiber.App, staticPaths map[string]struct{}) {
+	app.Use(func(c *fiber.Ctx) error {
+		if _, ok := staticPaths[c.OriginalURL()]; ok {
+			return c.Next()
+		}
+		return utilities.IntoTempl(c, not_found.Index(not_found.NotFoundParams{}, not_found.NotFoundErrors{}))
 	})
 }
 

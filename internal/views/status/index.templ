@@ -24,11 +24,7 @@ type StatusErrors struct {
 templ Index[T types.Number](params StatusParams[T], errs StatusErrors) {
 	@layouts.Base(){
 		<div id="status-container" class="flex justify-center items-center h-full w-full">
-			if len(errs.Token) > 0 {
-				@UserStatusSearch(params.Token, errs.Token)
-			} else {
-				@Chart(params.Timeseries, params.Name, params.CurrentLimit)
-			}
+			@Chart(params.Timeseries, params.Name, params.CurrentLimit)
 		</div>
 	}
 }
@@ -133,35 +129,6 @@ templ DisabledDropdownItem(n int) {
 			Last { strconv.Itoa(n) } Submissions
 		</a>
 	</li>
-}
-
-templ UserStatusSearch(invalidToken string, tokenError string) {
-    <form 
-		class="max-w-md w-full flex flex-col gap-2 bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6"
-	>
-        <label class="text-sm text-gray-500">
-            Search User by Challenge Token
-        </label>
-        <input 
-            class="p-2 border border-gray-300 rounded-md w-full"
-            required
-            name="token"
-            placeholder="Token"
-            error
-            value={ invalidToken }
-        />
-        if len(tokenError) > 0 && invalidToken != "" {
-            <label class="text-red-500 text-sm">
-                { tokenError }
-            </label>
-        }
-        <button 
-            class="bg-blue-500 text-white rounded-xl p-2 text-center hover:bg-blue-400 transition-all cursor-pointer"
-			type="submit"
-        >
-            View Status
-        </button>
-    </form>
 }
 
 

@@ -7,6 +7,7 @@ import (
 	"movie-matcher/internal/model"
 	"movie-matcher/internal/server/ctxt"
 	"movie-matcher/internal/utilities"
+	"movie-matcher/internal/views/not_found"
 	"movie-matcher/internal/views/status"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,14 +18,16 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	rawToken := c.Query("token")
 	token, err := uuid.Parse(rawToken)
 
-	var params status.StatusParams[int]
-	params.Token = rawToken
+	notFoundParams := not_found.NotFoundParams{
+		Token: rawToken,
+	}
+	var notFoundErrs not_found.NotFoundErrors
 
 	var errs status.StatusErrors
 
 	if err != nil {
-		errs.Token = "The token provided does not match the expected format."
-		return utilities.IntoTempl(c, status.Index(params, errs))
+		notFoundErrs.Token = "The token provided does not match the expected format."
+		return utilities.IntoTempl(c, not_found.Index(notFoundParams, notFoundErrs))
 	}
 
 	ctxt.WithToken(c, token)
@@ -68,15 +71,17 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			errs.Token = "The provided token is invalid."
-			return utilities.IntoTempl(c, status.Index(params, errs))
+			notFoundErrs.Token = "The provided token is invalid."
+			return utilities.IntoTempl(c, not_found.Index(notFoundParams, notFoundErrs))
 		}
 	}
 	
-	params.Token = token.String()
-	params.Timeseries = intoTimePoints(<-submissionsCh)
-	params.Name = <-nameCh
-	params.CurrentLimit = limit
+	params := status.StatusParams[int]{
+		Token: token.String(),
+		Timeseries: intoTimePoints(<-submissionsCh),
+		Name: <-nameCh,
+		CurrentLimit: limit,
+	}
 
 	return utilities.IntoTempl(c, status.Index(params, errs))
 }
