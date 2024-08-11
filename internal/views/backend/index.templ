@@ -2,9 +2,9 @@ package backend
 
 import "movie-matcher/internal/views/layouts"
 
-templ Backend() {
+templ Index() {
 	@layouts.Base() {
-		<div class="mx-auto max-w-5xl px-4 py-2 flex flex-col gap-8 text-center text-white">
+		<div class="mx-auto max-w-5xl mt-32 px-4 py-2 flex flex-col gap-8 text-center text-white">
 			<h2 class="font-semibold text-3xl mb-2">Backend Engineering Challenge</h2>
 			<ul class="text-left space-y-6">
 				@GlassMorphismListItem() {
