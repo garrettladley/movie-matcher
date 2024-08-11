@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"movie-matcher/internal/config"
+	"movie-matcher/internal/constants"
 	"movie-matcher/internal/server/handlers"
 	"movie-matcher/internal/services/omdb"
 	"movie-matcher/internal/storage"
@@ -26,7 +27,7 @@ func Setup(settings config.Settings) *fiber.App {
 	service := createService(settings)
 	setupCaching(app)
 	setupRoutes(app, service)
-	setupNotFoundRoute(app, StaticPaths)
+	setup404View(app, StaticPaths)
 	return app
 }
 
@@ -87,24 +88,9 @@ func setupRoutes(app *fiber.App, service *handlers.Service) {
 	app.Route("/frontend", func(r fiber.Router) {
 		r.Get("/movies", service.Frontend)
 	})
-	app.Route("/", func(r fiber.Router) {
-		r.Get("favicon.ico", x404)
-		r.Get("/deps/flowbite.min.js.map", x404)
-		r.Get("", service.Home)
-		r.Post("register", service.Register)
-		r.Get("token", service.Token)
-		r.Get("chart", service.Chart)
-		r.Get("status", service.Status)
-		r.Route(":token", func(r fiber.Router) {
-			r.Get("prompt", service.Prompt)
-			r.Post("submit", service.Submit)
-		})
-		r.Route("frontend", func(r fiber.Router) {
-			r.Get("movies", service.Frontend)
-		})
-	})
 }
 
+// MARK: there should be a global vs status 404
 func setup404View(app *fiber.App, staticPaths map[string]struct{}) {
 	app.Use(func(c *fiber.Ctx) error {
 		if _, ok := staticPaths[c.OriginalURL()]; ok {
