@@ -8,5 +8,5 @@ import (
 )
 
 func (s *Service) Backend(c *fiber.Ctx) error {
-	return utilities.Render(c, backend.Backend())
+	return utilities.Render(c, backend.Index())
 }

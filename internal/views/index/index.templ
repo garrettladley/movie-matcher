@@ -6,7 +6,7 @@ import (
 )
 
 templ Index() {
-	@layouts.Base() {
+	@layouts.Base(true) {
 		<img src="/images/dark_background.jpg" class="absolute w-screen h-screen"/>
 		<div class="absolute w-screen h-screen mx-auto px-4 text-center flex flex-col items-center justify-center text-white">
 			@ChallengeContainer()
