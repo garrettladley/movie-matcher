@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"log/slog"
 	"sync"
 
 	"movie-matcher/internal/applicant"
@@ -15,9 +15,20 @@ import (
 
 func (s *Service) Status(c *fiber.Ctx) error {
 	rawEmail := c.Query("email")
+
 	email, err := applicant.ParseNUEmail(rawEmail)
 	if err != nil {
-		return utilities.BadRequest(fmt.Errorf("failed to parse email. got: %s", email))
+		return utilities.Render(
+			c,
+			status.Err(
+				status.ErrParams{
+					Email: rawEmail,
+				},
+				status.ErrErrors{
+					Email: "The email provided is not a valid @northeastern.edu address",
+				},
+			),
+		)
 	}
 
 	ctxt.WithEmail(c, email)
@@ -61,9 +72,27 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			return err
+			slog.Error("status", "err", err)
+			utilities.Render(
+				c,
+				status.Err(
+					status.ErrParams{
+						Email: rawEmail,
+					},
+					status.ErrErrors{
+						Email: "Error encountered while trying to fetch data",
+					},
+				),
+			)
 		}
 	}
 
-	return into(c, status.Index(intoTimePoints(<-submissionsCh), <-nameCh, limit))
+	params := status.Params[int]{
+		Email:        email,
+		Timeseries:   intoTimePoints(<-submissionsCh),
+		Name:         <-nameCh,
+		CurrentLimit: limit,
+	}
+
+	return utilities.Render(c, status.Index(params))
 }

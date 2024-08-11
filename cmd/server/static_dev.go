@@ -14,3 +14,7 @@ func public() http.Handler {
 func deps() http.Handler {
 	return http.StripPrefix("/deps/", http.FileServerFS(os.DirFS("deps")))
 }
+
+func images() http.Handler {
+	return http.StripPrefix("/images/", http.FileServerFS(os.DirFS("images")))
+}

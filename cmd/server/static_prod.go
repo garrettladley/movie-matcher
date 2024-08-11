@@ -22,3 +22,11 @@ var depsFS embed.FS // nolint:unused
 func deps() http.Handler {
 	return http.FileServerFS(depsFS)
 }
+
+//go:embed images
+var imagesFS embed.FS // nolint:unused
+
+// nolint:unused
+func images() http.Handler {
+	return http.FileServerFS(imagesFS)
+}

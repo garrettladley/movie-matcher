@@ -10,10 +10,17 @@ import (
 	"strconv"
 )
 
-templ Index[T types.Number](timeseries []types.TimePoint[T], name applicant.Name, currentLimit int) {
+type Params[T types.Number] struct {
+	Timeseries   []types.TimePoint[T]
+	Name         applicant.Name
+	CurrentLimit int
+	Email        applicant.NUEmail
+}
+
+templ Index[T types.Number](params Params[T]) {
 	@layouts.Base() {
-		<div class="flex justify-center items-center h-screen w-full text-white">
-			@Chart(timeseries, name, currentLimit)
+		<div id="status-container" class="flex justify-center items-center h-full w-full">
+			@Chart(params.Timeseries, params.Name, params.CurrentLimit)
 		</div>
 	}
 }
@@ -24,11 +31,11 @@ templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name
 		<div id="area-chart"></div>
 		@ChartFooter(currentLimit)
 	</div>
+	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
+	<data id="token" value={ templ.JSONString(ctxt.GetEmail(ctx)) }></data>
+	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>
 	<script src="/deps/flowbite.min.js"></script>
 	<script src="/deps/apexcharts.min.js"></script>
-	<data id="data" value={ templ.JSONString(data.Into(timeseries)) }></data>
-	<data id="email" value={ templ.JSONString(ctxt.GetEmail(ctx)) }></data>
-	<data id="currentLimit" value={ templ.JSONString(currentLimit) }></data>
 	@ApexChartScript()
 	@Poller()
 }
@@ -38,7 +45,7 @@ templ ChartHeader(name applicant.Name, currentLimit int) {
 		@ChartTooltip()
 		<h2 class="leading-none text-3xl font-bold dark:text-white pb-2">{ name.String() }'s Submissions</h2>
 		<div>
-			How to <span data-tooltip-target="tooltip-chart" class="text-[#187dff] cursor-default"> interpret the score? </span>
+			How to <span data-tooltip-target="tooltip-chart" class="text-[#187dff] cursor-default">interpret the score? </span>
 		</div>
 	</div>
 }
@@ -99,7 +106,7 @@ templ DropdownItem(n int) {
 											window.chart.updateSeries([{ data: data }]);
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
 										})
-										.catch(error => console.error('Error:', error));`, 
+										.catch(error => console.error('Error:', error));`,
 									ctxt.GetEmail(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-500 dark:hover:bg-gray-500 dark:hover:text-white cursor-pointer transition-all ease-in-out"
 		>
@@ -119,7 +126,7 @@ templ DisabledDropdownItem(n int) {
 											window.chart.updateSeries([{ data: data }]);
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
                 						})
-										.catch(error => console.error('Error:', error));`, 
+										.catch(error => console.error('Error:', error));`,
 									ctxt.GetEmail(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-500 dark:hover:bg-gray-500 dark:hover:text-white cursor-pointer transition-all ease-in-out"
 			disabled
