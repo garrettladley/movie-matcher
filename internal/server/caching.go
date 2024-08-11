@@ -6,4 +6,5 @@ var StaticPaths = map[string]struct{}{
 	"/deps/flowbite.min.js":       {},
 	"/public/styles.css":          {},
 	"/images/dark_background.jpg": {},
+	"/images/generate.png":        {},
 }
