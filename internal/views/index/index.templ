@@ -7,28 +7,47 @@ import (
 
 templ Index() {
 	@layouts.Base() {
-		<div class="mx-auto max-w-5xl px-4 py-2 gap-x-8 text-center">
-			<h1 class="font-bold sm:text-8xl text-6xl my-2 underline decoration-[#187dff]">Generate</h1>
-			<h2 class="font-bold sm:text-5xl text-3xl my-2"><span class="text-[#ffbf3c]">Software</span> Fall '24</h2>
-			<h2 class="font-semibold text-3xl mt-28 mb-2">Engineering Challenge</h2>
-			<p class="max-w-xl my-2">
-				<code>
-					Thank you for applying to the Software Engineering position at Generate Product Development!
-					Please select ONE of the technical challenges below!
-				</code>
-			</p>
-			<div class="flex justify-evenly max-w-3xl mx-auto mt-6">
-				@Button("Backend", "/challenges/backend")
-				@Button("Frontend", constants.FrontendChallengeURL)
-			</div>
+		<img src="/images/dark_backgroundkground.jpg" class="absolute w-screen h-screen"/>
+		<div class="absolute w-screen h-screen mx-auto px-4 text-center flex flex-col items-center justify-center text-white">
+			@ChallengeContainer()
 		</div>
 	}
 }
 
-templ Button(label string, href string) {
-	<a href={ templ.SafeURL(href) } tabindex="-1" class="font-bold text-lg sm:text-2xl text-white">
-		<button type="button" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 focus:ring-4 focus:ring-blue-300 rounded-lg px-5 py-2.5 me-2 mb-2 focus:outline-none">
-			{ label }
-		</button>
+templ ChallengeContainer() {
+	<div class="px-12 py-16 bg-gray-400 rounded-xl backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-400 flex flex-col gap-4">
+		<h2 class="font-semibold text-3xl mb-2">Engineering Challenge</h2>
+		<p class="max-w-xl my-2">
+			<code>
+				Thank you for applying to the Software Engineering position at Generate Product Development!
+				Please select ONE of the technical challenges below!
+			</code>
+		</p>
+		<div class="flex flex-row w-full gap-4">
+			@Link("/challenges/backend", ButtonTargetSelf) {
+				BACKEND
+			}
+			@Link(constants.FrontendChallengeURL, ButtonTargetBlank) {
+				FRONTEND
+			}
+		</div>
+	</div>
+}
+
+type ButtonTarget string
+
+const (
+	ButtonTargetBlank ButtonTarget = "_blank"
+	ButtonTargetSelf  ButtonTarget = "_self"
+)
+
+templ Link(href string, target ButtonTarget) {
+	<a
+		href={ templ.SafeURL(href) }
+		tabindex="-1"
+		class="bg-[#187dff] w-full text-white font-medium hover:backdrop-filter hover:backdrop-blur-sm hover:bg-opacity-20 rounded-xl p-2 text-center transition-all cursor-pointer hover:shadow-inner"
+		target={ string(target) }
+	>
+		{ children... }
 	</a>
 }

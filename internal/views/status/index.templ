@@ -26,7 +26,7 @@ templ Index[T types.Number](params Params[T]) {
 }
 
 templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name, currentLimit int) {
-	<div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+	<div class="px-12 py-10 bg-gray-400 rounded-xl backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-400 flex flex-col gap-4 p-6 max-w-[90%]">
 		@ChartHeader(name, currentLimit)
 		<div id="area-chart"></div>
 		@ChartFooter(currentLimit)
@@ -41,9 +41,11 @@ templ Chart[T types.Number](timeseries []types.TimePoint[T], name applicant.Name
 }
 
 templ ChartHeader(name applicant.Name, currentLimit int) {
-	<div class="flex justify-between">
+	<div>
+		@ChartTooltip()
+		<h2 class="leading-none text-3xl font-bold dark:text-white pb-2">{ name.String() }'s Submissions</h2>
 		<div>
-			<h5 class="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">{ name.String() }'s Submissions</h5>
+			How to <span data-tooltip-target="tooltip-chart" class="text-[#187dff] cursor-default">interpret the score? </span>
 		</div>
 	</div>
 }
@@ -57,12 +59,19 @@ templ ChartFooter(currentLimit int) {
 	</div>
 }
 
+templ ChartTooltip() {
+	<div id="tooltip-chart" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+		Submissions are scored based on <span class="text-[#ffbf3c]">how close the ranking matches our internal solution</span>. Higher scores are better, and a 100 is perfect, but remember, <span class="text-[#ffbf3c]">score is not the only factor we evaluate</span>.
+		<div class="tooltip-arrow" data-popper-arrow></div>
+	</div>
+}
+
 templ DropdownButton(currentLimit int) {
 	<button
 		id="dropdownDefaultButton"
 		data-dropdown-toggle="lastSubmissionsdropdown"
 		data-dropdown-placement="bottom"
-		class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
+		class="text-sm font-medium text-center inline-flex items-center"
 		type="button"
 	>
 		Last { strconv.Itoa(currentLimit) } Submissions
@@ -73,8 +82,8 @@ templ DropdownButton(currentLimit int) {
 }
 
 templ DropdownMenu(currentLimit int) {
-	<div id="lastSubmissionsdropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-		<ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+	<div id="lastSubmissionsdropdown" class="z-10 hidden bg-gray-900 rounded-xl backdrop-filter backdrop-blur-md border border-gray-400">
+		<ul class="py-2 text-sm" aria-labelledby="dropdownDefaultButton">
 			for _, n := range []int{5, 10, 25, 50, 100} {
 				if n != currentLimit {
 					@DropdownItem(n)
@@ -91,7 +100,7 @@ templ DropdownItem(n int) {
 		<a
 			hx-on:click={ templ.ComponentScript{
 								Call:fmt.Sprintf(
-									`fetch('/%s/chart?limit=%d')
+									`fetch('/chart?email=%s&limit=%d')
 										.then(response => response.json())
 										.then(data => {
 											window.chart.updateSeries([{ data: data }]);
@@ -99,7 +108,7 @@ templ DropdownItem(n int) {
 										})
 										.catch(error => console.error('Error:', error));`,
 									ctxt.GetEmail(ctx), n, n) } }
-			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+			class="block px-4 py-2 hover:bg-gray-500 dark:hover:bg-gray-500 dark:hover:text-white cursor-pointer transition-all ease-in-out"
 		>
 			Last { strconv.Itoa(n) } Submissions
 		</a>
@@ -111,7 +120,7 @@ templ DisabledDropdownItem(n int) {
 		<a
 			hx-on:click={ templ.ComponentScript{
 								Call:fmt.Sprintf(
-									`fetch('/%s/chart?limit=%d')
+									`fetch('/chart?email=%s&limit=%d')
 										.then(response => response.json())
 										.then(data => {
 											window.chart.updateSeries([{ data: data }]);
@@ -119,7 +128,7 @@ templ DisabledDropdownItem(n int) {
                 						})
 										.catch(error => console.error('Error:', error));`,
 									ctxt.GetEmail(ctx), n, n) } }
-			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+			class="block px-4 py-2 hover:bg-gray-500 dark:hover:bg-gray-500 dark:hover:text-white cursor-pointer transition-all ease-in-out"
 			disabled
 		>
 			Last { strconv.Itoa(n) } Submissions
@@ -174,6 +183,7 @@ templ ApexChartScript() {
 					},
 				},
 				series: [{
+					name: 'Score',
 					data: JSON.parse(document.getElementById('data').value),
 					color: "#1A56DB",
 				}],

@@ -14,9 +14,20 @@ templ Base() {
 			<script src="/deps/htmx.min.js" defer></script>
 		</head>
 		<body
-			class="antialiased flex min-h-screen flex-col"
+			class="antialiased flex min-h-screen flex-col bg-[#222222]"
 		>
+			@StaticNavBar()
 			{ children... }
 		</body>
 	</html>
+}
+
+templ StaticNavBar() {
+	<nav class="w-screen absolute z-20 top-0 left-0 py-6 px-6 gap-4 justify-center md:justify-start text-white">
+		<a class="h-full w-auto flex flex-row items-center gap-4" href="/">
+			<img src="/public/images/generate.png" class="w-[250px] h-auto max-w-[35%]"/>
+			<div class="w-[2px] self-stretch my-2 bg-white" />
+			<h2 class="font-light md:text-3xl text-lg my-1"><span class="hover:text-[#ffbf3c] transition-all ease-in-out">SOFTWARE</span> FALL '24</h2>
+		</a>
+	</nav>
 }

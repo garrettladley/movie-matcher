@@ -73,7 +73,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 	for err := range errCh {
 		if err != nil {
 			slog.Error("status", "err", err)
-			utilities.Render(
+			return utilities.Render(
 				c,
 				status.Err(
 					status.ErrParams{

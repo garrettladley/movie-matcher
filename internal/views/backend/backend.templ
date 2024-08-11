@@ -4,12 +4,10 @@ import "movie-matcher/internal/views/layouts"
 
 templ Backend() {
 	@layouts.Base() {
-		<div class="mx-auto max-w-5xl px-4 py-2 gap-x-8 text-center">
-			<h1 class="font-bold sm:text-8xl text-6xl my-2 underline decoration-[#187dff]">Generate</h1>
-			<h2 class="font-bold sm:text-5xl text-3xl my-2"><span class="text-[#ffbf3c]">Software</span> Fall '24</h2>
-			<h2 class="font-semibold text-3xl mt-28 mb-6"><span class="text-[#187dff]">Backend</span> Engineering Challenge</h2>
+		<div class="mx-auto max-w-5xl px-4 py-2 flex flex-col gap-8 text-center text-white">
+			<h2 class="font-semibold text-3xl mb-2">Backend Engineering Challenge</h2>
 			<ul class="text-left space-y-6">
-				<li class="bg-gray-100 p-6">
+				@GlassMorphismListItem() {
 					<h3 class="font-semibold text-2xl">Task</h3>
 					<p class="max-w-xl my-2">
 						<code>
@@ -27,8 +25,8 @@ templ Backend() {
 							and <span class="font-bold">submits that ranking</span> to the server.
 						</code>
 					</p>
-				</li>
-				<li class="bg-gray-100 p-6">
+				}
+				@GlassMorphismListItem() {
 					<h3 class="font-semibold text-2xl">Details</h3>
 					<p class="max-w-xl my-2">
 						<code>
@@ -50,31 +48,31 @@ templ Backend() {
 							but remember, score is <span class="font-bold">NOT</span> the only factor we evaluate.
 						</code>
 					</p>
-				</li>
-				<li class="bg-gray-100 p-6">
+				}
+				@GlassMorphismListItem() {
 					<h3 class="font-semibold text-2xl">Register</h3>
 					<p class="max-w-xl my-2">
 						<code>
 							- #TODO: Garrett plz fill in
 						</code>
 					</p>
-				</li>
-				<li class="bg-gray-100 p-6">
+				}
+				@GlassMorphismListItem() {
 					<h3 class="font-semibold text-2xl">Submit</h3>
 					<p class="max-w-xl my-2">
 						<code>
 							- #TODO: Garrett plz fill in
 						</code>
 					</p>
-				</li>
-				<li class="bg-gray-100 p-6">
+				}
+				@GlassMorphismListItem() {
 					<h3 class="font-semibold text-2xl">API Overview</h3>
 					<p class="max-w-xl my-2">
 						<code>
 							- #TODO: Garrett plz fill in
 						</code>
 					</p>
-				</li>
+				}
 			</ul>
 			<p class="max-w-2xl mt-12 p-6">
 				<code>
@@ -86,4 +84,10 @@ templ Backend() {
 			</p>
 		</div>
 	}
+}
+
+templ GlassMorphismListItem() {
+	<li class="px-12 py-10 bg-gray-400 rounded-xl backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-400 flex flex-col gap-4 p-6">
+		{ children... }
+	</li>
 }
