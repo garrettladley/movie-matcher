@@ -1,6 +1,6 @@
 package layouts
 
-templ Base() {
+templ Base(useNav bool) {
 	<!DOCTYPE html>
 	<html lang="en" data-theme="dark">
 		<head>
@@ -16,7 +16,9 @@ templ Base() {
 		<body
 			class="antialiased flex min-h-screen flex-col bg-[#222222]"
 		>
-			@StaticNavBar()
+			if useNav {
+				@StaticNavBar()
+			}
 			{ children... }
 		</body>
 	</html>
