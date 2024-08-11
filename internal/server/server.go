@@ -8,7 +8,7 @@ import (
 	"movie-matcher/internal/services/omdb"
 	"movie-matcher/internal/storage"
 	"movie-matcher/internal/utilities"
-	"movie-matcher/internal/views/not_found"
+	"movie-matcher/internal/views/status"
 
 	go_json "github.com/goccy/go-json"
 
@@ -24,9 +24,9 @@ func Setup(settings config.Settings) *fiber.App {
 	setupMiddleware(app)
 	setupHealthCheck(app)
 	service := createService(settings)
-	staticPaths := setupCaching(app)
+	setupCaching(app)
 	setupRoutes(app, service)
-	setupNotFoundRoute(app, staticPaths)
+	setupNotFoundRoute(app, StaticPaths)
 	return app
 }
 
@@ -64,6 +64,29 @@ func createService(settings config.Settings) *handlers.Service {
 }
 
 func setupRoutes(app *fiber.App, service *handlers.Service) {
+	app.Get("/", service.Index)
+	app.Get("/favicon.ico", x404)
+	app.Get("/deps/flowbite.min.js.map", x404)
+	app.Post("/register", service.Register)
+	app.Get("/token", service.Token)
+	app.Get("/chart", service.Chart)
+	app.Get("/status", service.Status)
+
+	app.Route("/challenges", func(r fiber.Router) {
+		r.Get("/backend", service.Backend)
+		r.Get("/frontend", func(c *fiber.Ctx) error {
+			return c.Redirect(constants.FrontendChallengeURL, http.StatusTemporaryRedirect)
+		})
+	})
+
+	app.Route("/:token", func(r fiber.Router) {
+		r.Get("/prompt", service.Prompt)
+		r.Post("/submit", service.Submit)
+	})
+
+	app.Route("/frontend", func(r fiber.Router) {
+		r.Get("/movies", service.Frontend)
+	})
 	app.Route("/", func(r fiber.Router) {
 		r.Get("favicon.ico", x404)
 		r.Get("/deps/flowbite.min.js.map", x404)
@@ -82,12 +105,12 @@ func setupRoutes(app *fiber.App, service *handlers.Service) {
 	})
 }
 
-func setupNotFoundRoute(app *fiber.App, staticPaths map[string]struct{}) {
+func setup404View(app *fiber.App, staticPaths map[string]struct{}) {
 	app.Use(func(c *fiber.Ctx) error {
 		if _, ok := staticPaths[c.OriginalURL()]; ok {
 			return c.Next()
 		}
-		return utilities.IntoTempl(c, not_found.Index(not_found.NotFoundParams{}, not_found.NotFoundErrors{}))
+		return utilities.Render(c, status.Err(status.ErrParams{}, status.ErrErrors{}))
 	})
 }
 

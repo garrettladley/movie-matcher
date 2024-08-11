@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"log/slog"
 	"sync"
 
 	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/model"
 	"movie-matcher/internal/server/ctxt"
 	"movie-matcher/internal/utilities"
-	"movie-matcher/internal/views/not_found"
 	"movie-matcher/internal/views/status"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,16 +15,20 @@ import (
 
 func (s *Service) Status(c *fiber.Ctx) error {
 	rawEmail := c.Query("email")
+
 	email, err := applicant.ParseNUEmail(rawEmail)
-
-	notFoundParams := not_found.NotFoundParams{
-		Email: rawEmail,
-	}
-	var notFoundErrs not_found.NotFoundErrors
-
 	if err != nil {
-		notFoundErrs.Email = "The email provided is not a valid @northeastern.edu address"
-		return utilities.IntoTempl(c, not_found.Index(notFoundParams, notFoundErrs))
+		return utilities.Render(
+			c,
+			status.Err(
+				status.ErrParams{
+					Email: rawEmail,
+				},
+				status.ErrErrors{
+					Email: "The email provided is not a valid @northeastern.edu address",
+				},
+			),
+		)
 	}
 
 	ctxt.WithEmail(c, email)
@@ -68,17 +72,27 @@ func (s *Service) Status(c *fiber.Ctx) error {
 
 	for err := range errCh {
 		if err != nil {
-			notFoundErrs.Email = "The provided email is not registered."
-			return utilities.IntoTempl(c, not_found.Index(notFoundParams, notFoundErrs))
+			slog.Error("status", "err", err)
+			utilities.Render(
+				c,
+				status.Err(
+					status.ErrParams{
+						Email: rawEmail,
+					},
+					status.ErrErrors{
+						Email: "Error encountered while trying to fetch data",
+					},
+				),
+			)
 		}
 	}
-	
-	params := status.StatusParams[int]{
-		Email: email,
-		Timeseries: intoTimePoints(<-submissionsCh),
-		Name: <-nameCh,
+
+	params := status.Params[int]{
+		Email:        email,
+		Timeseries:   intoTimePoints(<-submissionsCh),
+		Name:         <-nameCh,
 		CurrentLimit: limit,
 	}
 
-	return utilities.IntoTempl(c, status.Index(params))
+	return utilities.Render(c, status.Index(params))
 }

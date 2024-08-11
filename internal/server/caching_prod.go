@@ -13,26 +13,17 @@ import (
 	"github.com/gofiber/storage/memory/v2"
 )
 
-func setupCaching(app *fiber.App) map[string]struct{} {
+func setupCaching(app *fiber.App) {
 	cacheStorage := memory.New()
 	keyGenerator := func(c *fiber.Ctx) string { return utils.CopyString(c.OriginalURL()) }
 
-	staticPaths := map[string]struct{}{
-		"/deps/apexcharts.min.js": {},
-		"/deps/htmx.min.js":       {},
-		"/deps/flowbite.min.js":   {},
-		"/public/styles.css":      {},
-	}
-
 	app.Use(cache.New(cache.Config{
-		Next:         createCacheNextFunction(cacheStorage, keyGenerator, staticPaths),
+		Next:         createCacheNextFunction(cacheStorage, keyGenerator, StaticPaths),
 		Storage:      cacheStorage,
 		KeyGenerator: keyGenerator,
 		Expiration:   time.Hour * 24 * 365, // 1 year
 		CacheControl: true,
 	}))
-
-	return staticPaths
 }
 
 func createCacheNextFunction(storage *memory.Storage, keyGenerator func(c *fiber.Ctx) string, staticPaths map[string]struct{}) func(*fiber.Ctx) bool {

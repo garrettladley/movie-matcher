@@ -5,20 +5,20 @@ import (
 	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/data"
 	"movie-matcher/internal/server/ctxt"
+	"movie-matcher/internal/views/layouts"
 	"movie-matcher/internal/views/types"
 	"strconv"
-	"movie-matcher/internal/views/layouts"
 )
 
-type StatusParams[T types.Number] struct {
-	Timeseries  	[]types.TimePoint[T]
-	Name 	  		applicant.Name
-	CurrentLimit 	int
-	Email 			applicant.NUEmail
+type Params[T types.Number] struct {
+	Timeseries   []types.TimePoint[T]
+	Name         applicant.Name
+	CurrentLimit int
+	Email        applicant.NUEmail
 }
 
-templ Index[T types.Number](params StatusParams[T]) {
-	@layouts.Base(){
+templ Index[T types.Number](params Params[T]) {
+	@layouts.Base() {
 		<div id="status-container" class="flex justify-center items-center h-full w-full">
 			@Chart(params.Timeseries, params.Name, params.CurrentLimit)
 		</div>
@@ -97,7 +97,7 @@ templ DropdownItem(n int) {
 											window.chart.updateSeries([{ data: data }]);
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
 										})
-										.catch(error => console.error('Error:', error));`, 
+										.catch(error => console.error('Error:', error));`,
 									ctxt.GetEmail(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
 		>
@@ -117,7 +117,7 @@ templ DisabledDropdownItem(n int) {
 											window.chart.updateSeries([{ data: data }]);
 											document.getElementById('dropdownDefaultButton').textContent = 'Last %d Submissions';
                 						})
-										.catch(error => console.error('Error:', error));`, 
+										.catch(error => console.error('Error:', error));`,
 									ctxt.GetEmail(ctx), n, n) } }
 			class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
 			disabled
@@ -126,7 +126,6 @@ templ DisabledDropdownItem(n int) {
 		</a>
 	</li>
 }
-
 
 templ ApexChartScript() {
 	<script type="text/javascript">

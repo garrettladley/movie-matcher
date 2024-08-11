@@ -8,5 +8,5 @@ import (
 )
 
 func (s *Service) Home(c *fiber.Ctx) error {
-	return utilities.IntoTempl(c, home.Home())
+	return utilities.Render(c, home.Home())
 }
