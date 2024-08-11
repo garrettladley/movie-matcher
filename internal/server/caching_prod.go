@@ -18,7 +18,7 @@ func setupCaching(app *fiber.App) {
 	keyGenerator := func(c *fiber.Ctx) string { return utils.CopyString(c.OriginalURL()) }
 
 	app.Use(cache.New(cache.Config{
-		Next:         createCacheNextFunction(cacheStorage, keyGenerator),
+		Next:         createCacheNextFunction(cacheStorage, keyGenerator, StaticPaths),
 		Storage:      cacheStorage,
 		KeyGenerator: keyGenerator,
 		Expiration:   time.Hour * 24 * 365, // 1 year
@@ -26,16 +26,7 @@ func setupCaching(app *fiber.App) {
 	}))
 }
 
-func createCacheNextFunction(storage *memory.Storage, keyGenerator func(c *fiber.Ctx) string) func(*fiber.Ctx) bool {
-	staticPaths := map[string]struct{}{
-		"/deps/apexcharts.min.js": {},
-		"/deps/htmx.min.js":       {},
-		"/deps/flowbite.min.js":   {},
-		"/public/styles.css":      {},
-		"/":                       {},
-		"/challenges/backend":     {},
-	}
-
+func createCacheNextFunction(storage *memory.Storage, keyGenerator func(c *fiber.Ctx) string, staticPaths map[string]struct{}) func(*fiber.Ctx) bool {
 	return func(c *fiber.Ctx) bool {
 		if _, ok := staticPaths[c.OriginalURL()]; ok {
 			return false

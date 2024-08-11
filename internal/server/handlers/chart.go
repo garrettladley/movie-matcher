@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/data"
 	"movie-matcher/internal/server/ctxt"
 
-	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,6 +16,7 @@ import (
 func (s *Service) Chart(c *fiber.Ctx) error {
 	rawEmail := c.Query("email")
 	email, err := applicant.ParseNUEmail(rawEmail)
+
 	if err != nil {
 		return utilities.BadRequest(fmt.Errorf("failed to parse email. got: %s", email))
 	}

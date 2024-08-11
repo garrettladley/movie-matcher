@@ -1,0 +1,67 @@
+package status
+
+import "movie-matcher/internal/views/layouts"
+
+type ErrParams struct {
+	Email string
+}
+
+type ErrErrors struct {
+	Email string
+}
+
+templ Err(params ErrParams, errors ErrErrors) {
+	@layouts.Base() {
+		<div id="not-found-container" class="flex justify-center items-center h-full w-full">
+			<div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+				<h2 class="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">
+					404 Not Found
+				</h2>
+				<div class="flex flex-col gap-4 border-gray-200 border-t dark:border-gray-700 pt-4 pb-4">
+					@UserStatusSearch(params.Email, errors.Email)
+					<p class="self-center">
+						OR
+					</p>
+					<div
+						class="bg-blue-500 text-white rounded-xl p-2 text-center hover:bg-blue-400 transition-all cursor-pointer"
+						hx-get="/"
+						hx-target="#not-found-container"
+						hx-swap="outerHTML"
+						hx-push-url="/"
+					>
+						Return to Home
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ UserStatusSearch(email string, emailError string) {
+	<form
+		class="flex flex-col gap-4"
+	>
+		<label class="text-sm text-gray-500">
+			Search User by Email
+		</label>
+		<input
+			class="p-2 border border-gray-300 rounded-md w-full"
+			required
+			name="email"
+			placeholder="Email"
+			error
+			value={ email }
+		/>
+		if len(emailError) > 0 {
+			<label class="text-red-500 text-sm">
+				{ emailError }
+			</label>
+		}
+		<button
+			class="bg-blue-500 text-white rounded-xl p-2 text-center hover:bg-blue-400 transition-all cursor-pointer"
+			type="submit"
+		>
+			View Status
+		</button>
+	</form>
+}

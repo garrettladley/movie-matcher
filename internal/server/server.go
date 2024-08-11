@@ -9,6 +9,7 @@ import (
 	"movie-matcher/internal/services/omdb"
 	"movie-matcher/internal/storage"
 	"movie-matcher/internal/utilities"
+	"movie-matcher/internal/views/status"
 
 	go_json "github.com/goccy/go-json"
 
@@ -26,6 +27,7 @@ func Setup(settings config.Settings) *fiber.App {
 	service := createService(settings)
 	setupCaching(app)
 	setupRoutes(app, service)
+	setup404View(app, StaticPaths)
 	return app
 }
 
@@ -85,6 +87,16 @@ func setupRoutes(app *fiber.App, service *handlers.Service) {
 
 	app.Route("/frontend", func(r fiber.Router) {
 		r.Get("/movies", service.Frontend)
+	})
+}
+
+// MARK: there should be a global vs status 404
+func setup404View(app *fiber.App, staticPaths map[string]struct{}) {
+	app.Use(func(c *fiber.Ctx) error {
+		if _, ok := staticPaths[c.OriginalURL()]; ok {
+			return c.Next()
+		}
+		return utilities.Render(c, status.Err(status.ErrParams{}, status.ErrErrors{}))
 	})
 }
 

@@ -2,7 +2,6 @@ package ctxt
 
 import (
 	"context"
-
 	"movie-matcher/internal/applicant"
 
 	"github.com/gofiber/fiber/v2"
