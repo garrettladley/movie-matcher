@@ -1,6 +1,8 @@
 package backend
 
-import "movie-matcher/internal/views/layouts"
+import (
+	"movie-matcher/internal/views/layouts"
+)
 
 templ Index() {
 	@layouts.Base(false) {
@@ -49,14 +51,7 @@ templ Index() {
 						</code>
 					</p>
 				}
-				@GlassMorphismListItem() {
-					<h3 class="font-semibold text-2xl">Register</h3>
-					<p class="max-w-xl my-2">
-						<code>
-							- #TODO: Garrett plz fill in
-						</code>
-					</p>
-				}
+				@register()
 				@GlassMorphismListItem() {
 					<h3 class="font-semibold text-2xl">Submit</h3>
 					<p class="max-w-xl my-2">

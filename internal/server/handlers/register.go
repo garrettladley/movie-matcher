@@ -72,5 +72,6 @@ func (s *Service) Register(c *fiber.Ctx) error {
 			registerResponse{
 				Token:  token,
 				Prompt: prompt,
-			})
+			},
+		)
 }
