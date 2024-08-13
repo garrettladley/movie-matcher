@@ -9,7 +9,7 @@ templ Index() {
 			<ul class="text-left space-y-6">
 				@GlassMorphismListItem() {
 					<h3 class="font-semibold text-2xl">Task</h3>
-					<p class="max-w-xl my-2">
+					<p class="max-w-3xl my-2">
 						<code>
 							It's Generate Movie Night!! <span class="text-blue-400">Software Director Linwood</span> has tasked you with selecting a movie to watch,
 							but all of our movie watcher's are <span class="text-red-400">very picky!</span> Can we generate a solution?
@@ -28,7 +28,7 @@ templ Index() {
 				}
 				@GlassMorphismListItem() {
 					<h3 class="font-semibold text-2xl">Details</h3>
-					<p class="max-w-xl my-2">
+					<p class="max-w-3xl my-2">
 						<code>
 							The movies you receive are represented by <a class="text-blue-400 underline" href="https://developer.imdb.com/documentation/key-concepts">IMDb IDs</a>.
 							You can use any solution to retrieve movie information from those IDs, but we recommend using the
@@ -45,36 +45,17 @@ templ Index() {
 							<br/>
 							Your solution will be scored based on how close your ranking matches our internal solution.
 							<span class="text-green-400">Lower scores are better</span>, and a 0 is perfect,
-							but remember, score is <span class="font-bold">NOT</span> the only factor we evaluate.
+							but remember, score is <span class="font-bold">NOT</span> the only factor we evaluate. A score of -1 indicates something was wrong with your submission. This is caused by 2 things. Either len(submission) != len(solution) or you included a MovieID in your submission that was not in the solution. 
 						</code>
 					</p>
 				}
-				@GlassMorphismListItem() {
-					<h3 class="font-semibold text-2xl">Register</h3>
-					<p class="max-w-xl my-2">
-						<code>
-							- #TODO: Garrett plz fill in
-						</code>
-					</p>
-				}
-				@GlassMorphismListItem() {
-					<h3 class="font-semibold text-2xl">Submit</h3>
-					<p class="max-w-xl my-2">
-						<code>
-							- #TODO: Garrett plz fill in
-						</code>
-					</p>
-				}
-				@GlassMorphismListItem() {
-					<h3 class="font-semibold text-2xl">API Overview</h3>
-					<p class="max-w-xl my-2">
-						<code>
-							- #TODO: Garrett plz fill in
-						</code>
-					</p>
-				}
+				@register()
+				@submit()
+				@prompt()
+				@token()
+				@errors()
 			</ul>
-			<p class="max-w-2xl mt-12 p-6">
+			<p class="max-w-3xl mt-12 p-6">
 				<code>
 					If you have any questions or concerns about the challenge, please email
 					<span class="text-red-400">ladley.g@northeastern.edu</span>,

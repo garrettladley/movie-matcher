@@ -113,9 +113,8 @@ func movieFromResult(res result) Movie {
 	}
 }
 
-var (
-	client = &apiClient{
-		apiKey: func() string {
-			return os.Getenv("OMDB_API_KEY")
-		}}
-)
+var client = &apiClient{
+	apiKey: func() string {
+		return os.Getenv("OMDB_API_KEY")
+	},
+}

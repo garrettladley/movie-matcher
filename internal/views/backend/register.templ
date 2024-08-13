@@ -1,0 +1,85 @@
+package backend
+
+templ register() {
+	@GlassMorphismListItem() {
+		<h3 class="font-semibold text-2xl">Register</h3>
+		<p class="max-w-3xl my-2">
+			<code>
+				Register for the challenge and receive your token & prompt.
+				<br/>
+				<br/>
+				<span class="text-yellow-400">POST</span> <span class="text-red-400">[BASE_URL]</span>/register
+				<br/>
+				<pre>
+					REQUEST BODY:
+					<br/>
+					&#123;
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"name"</span>: <span class="text-cyan-300">string</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"email"</span>: <span class="text-cyan-300">string</span>, <span class="text-green-400">&#47;&#47; of the form xyz.abc@northeastern.edu</span>
+					<br/>
+					&#125;
+				</pre>
+				<pre>
+					RESPONSE: <span class="text-green-400">201</span>
+					<br/>
+					&#123;
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"token"</span>: <span class="text-cyan-300">string</span>, <span class="text-green-400">&#47;&#47; stringified UUIDv4</span>
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"prompt"</span>: &#123;
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"movies"</span>: <span class="text-cyan-300">OrderedSet[MovieID]</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"people"</span>: <span class="text-cyan-300">[]Person</span>
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&#125;
+					<br/>
+					&#125;
+				</pre>
+				<pre>
+					PERSON:
+					<br/>
+					&#123;
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"name"</span>: <span class="text-cyan-300">string</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"preferences"</span>: &#123;
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"afterYear(inclusive)"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[uint]</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"beforeYear(exclusive)"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[uint]</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"maximumAgeRating(inclusive)"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[string]</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"shorterThan(exclusive)"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[string]</span>, <span class="text-green-400">&#47;&#47; of the form 72h3m0.5s</span>
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"favoriteGenre"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[string]</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"leastFavoriteDirector"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[string]</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"favoriteActors"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[[]string]</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"favoritePlotElements"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[[]string]Preference[</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"minimumRottenTomatoesScore(inclusive)"</span><span class="text-red-500">?</span>: <span class="text-cyan-300">Preference[uint]</span>
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&#125;
+					<br/>
+					&#125;
+				</pre>
+				<pre>
+					PREFERENCE[T]:
+					&#123;
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"value"</span>: <span class="text-cyan-300">T</span>,
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"weight"</span>: <span class="text-cyan-300">uint</span>
+					<br/>
+					&#125;
+				</pre>
+			</code>
+		</p>
+	}
+}
