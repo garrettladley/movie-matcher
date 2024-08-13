@@ -1,0 +1,28 @@
+package backend
+
+templ submit() {
+    @GlassMorphismListItem() {
+        <h3 class="font-semibold text-2xl">Submit</h3>
+        <p class="max-w-xl my-2">
+            <code>
+                Submit your ranking of MovieIDs for the challenge using the token you received during registration.
+                <br/>
+                <br/>
+                <span class="text-yellow-400">POST</span> <span class="text-red-400">[BASE_URL]</span>/<span class="text-red-400">[YOUR_TOKEN_FROM_REGISTER]</span>/submit
+                <br/>
+                <pre>
+                    REQUEST BODY:<br/>
+                    [<br/>
+                    &nbsp;&nbsp;<span class="text-cyan-300">MovieID</span>,<br/>
+                    &nbsp;&nbsp;<span class="text-cyan-300">MovieID</span>,<br/>
+                    &nbsp;&nbsp;<span class="text-cyan-300">MovieID</span><br/>
+                    ]
+                </pre>
+                <pre>
+                    RESPONSE: <span class="text-green-400">201</span><br/>
+                    <span class="text-cyan-300">int</span> <span class="text-green-400">&#47;&#47; representing your score</span>
+                </pre>
+            </code>
+        </p>
+    }
+}

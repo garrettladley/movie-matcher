@@ -1,0 +1,20 @@
+package backend
+
+templ errors() {
+    @GlassMorphismListItem() {
+        <h3 class="font-semibold text-2xl">Errors</h3>
+        <p class="max-w-xl my-2">
+            <code>
+                Errors should be fairly straightforward to understand. If you encounter anything unexpected, please reach out to us.
+                <br/>
+                <pre>
+                    RESPONSE: <span class="text-red-400">[4xx-5xx]</span><br/>
+                    &#123;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"statusCode"</span>: <span class="text-cyan-300">uint</span>,<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">"msg"</span>: <span class="text-cyan-300">string</span>, <span class="text-green-400">&#47;&#47; a (hopefully) informative error message</span><br/>
+                    &#125;
+                </pre>
+            </code>
+        </p>
+    }
+}

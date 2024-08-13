@@ -47,27 +47,15 @@ templ Index() {
 							<br/>
 							Your solution will be scored based on how close your ranking matches our internal solution.
 							<span class="text-green-400">Lower scores are better</span>, and a 0 is perfect,
-							but remember, score is <span class="font-bold">NOT</span> the only factor we evaluate.
+							but remember, score is <span class="font-bold">NOT</span> the only factor we evaluate. A score of -1 indicates something was wrong with your submission. This is caused by 2 things. Either len(submission) != len(solution) or you included a MovieID in your submission that was not in the solution. 
 						</code>
 					</p>
 				}
 				@register()
-				@GlassMorphismListItem() {
-					<h3 class="font-semibold text-2xl">Submit</h3>
-					<p class="max-w-xl my-2">
-						<code>
-							- #TODO: Garrett plz fill in
-						</code>
-					</p>
-				}
-				@GlassMorphismListItem() {
-					<h3 class="font-semibold text-2xl">API Overview</h3>
-					<p class="max-w-xl my-2">
-						<code>
-							- #TODO: Garrett plz fill in
-						</code>
-					</p>
-				}
+				@submit()
+				@prompt()
+				@token()
+				@errors()
 			</ul>
 			<p class="max-w-2xl mt-12 p-6">
 				<code>

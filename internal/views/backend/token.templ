@@ -1,0 +1,23 @@
+package backend
+
+templ token() {
+    @GlassMorphismListItem() {
+        <h3 class="font-semibold text-2xl">Token</h3>
+        <p class="max-w-xl my-2">
+            <code>
+                Get your token for the challenge using your query escaped email.
+                <br/>
+                <br/>
+                <span class="text-green-400">GET</span> <span class="text-red-400">[BASE_URL]</span>/token?email=<span class="text-cyan-300">[YOUR_QUERY_ESCAPED_EMAIL]</span>
+                <br/>
+                <pre>
+                    REQUEST BODY: None
+                </pre>
+                <pre>
+                    RESPONSE: <span class="text-green-400">200</span><br/>
+                    <span class="text-cyan-300">string</span> <span class="text-green-400">&#47;&#47; stringified UUIDv4</span>
+                </pre>
+            </code>
+        </p>
+    }
+}

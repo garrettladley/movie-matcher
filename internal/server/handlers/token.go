@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"movie-matcher/internal/applicant"
 	"movie-matcher/internal/utilities"
@@ -12,7 +13,11 @@ import (
 
 func (s *Service) Token(c *fiber.Ctx) error {
 	rawEmail := c.Query("email")
-	email, err := applicant.ParseNUEmail(rawEmail)
+	unescapedEmail, err := url.QueryUnescape(rawEmail)
+	if err != nil {
+		return utilities.BadRequest(fmt.Errorf("failed to unescape email. got: %s", rawEmail))
+	}
+	email, err := applicant.ParseNUEmail(unescapedEmail)
 	if err != nil {
 		return utilities.BadRequest(fmt.Errorf("failed to parse email. got: %s", email))
 	}
