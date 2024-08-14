@@ -19,7 +19,7 @@ type Params[T types.Number] struct {
 
 templ Index[T types.Number](params Params[T]) {
 	@layouts.Base(true) {
-		<div id="status-container" class="flex justify-center items-center h-full w-full">
+		<div id="status-container" class="flex justify-center items-center h-screen min-h-[650px] w-full text-white">
 			@Chart(params.Timeseries, params.Name, params.CurrentLimit)
 		</div>
 	}
@@ -61,7 +61,7 @@ templ ChartFooter(currentLimit int) {
 
 templ ChartTooltip() {
 	<div id="tooltip-chart" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-		Submissions are scored based on <span class="text-[#ffbf3c]">how close the ranking matches our internal solution</span>. Higher scores are better, and a 100 is perfect, but remember, <span class="text-[#ffbf3c]">score is not the only factor we evaluate</span>.
+		Submissions are scored based on <span class="text-[#ffbf3c]">how close the ranking matches our internal solution</span>. Lower scores are better, and a 0 is perfect, but remember, <span class="text-[#ffbf3c]">score is not the only factor we evaluate</span>. Also, a score of -1 indicates an invalid submission.
 		<div class="tooltip-arrow" data-popper-arrow></div>
 	</div>
 }

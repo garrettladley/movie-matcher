@@ -1,6 +1,9 @@
 package status
 
-import "movie-matcher/internal/views/layouts"
+import (
+	"movie-matcher/internal/views/layouts"
+	"movie-matcher/internal/views/backend"
+)
 
 type ErrParams struct {
 	Email string
@@ -12,14 +15,14 @@ type ErrErrors struct {
 
 templ Err(params ErrParams, errors ErrErrors) {
 	@layouts.Base(true) {
-		<div id="not-found-container" class="flex justify-center items-center h-full w-full">
-			<div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
-				<h2 class="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">
+		<div id="not-found-container" class="flex justify-center items-center h-screen min-h-[650px] w-full">
+			@backend.GlassMorphismListItem() {
+				<h2 class="leading-none text-3xl font-bold text-white dark:text-white pb-2">
 					404 Not Found
 				</h2>
 				<div class="flex flex-col gap-4 border-gray-200 border-t dark:border-gray-700 pt-4 pb-4">
 					@UserStatusSearch(params.Email, errors.Email)
-					<p class="self-center">
+					<p class="self-center text-white">
 						OR
 					</p>
 					<div
@@ -32,16 +35,27 @@ templ Err(params ErrParams, errors ErrErrors) {
 						Return to Home
 					</div>
 				</div>
-			</div>
+			}
 		</div>
 	}
 }
 
+templ StatusNavigation() {
+	<script>
+		function onStatusSearchSubmit(e) {
+			e.preventDefault();
+		    window.location.href = `/status?email=${e.target.email.value}`;
+		}
+	</script>
+}
+
 templ UserStatusSearch(email string, emailError string) {
+	@StatusNavigation()
 	<form
+		onsubmit="onStatusSearchSubmit(event)"
 		class="flex flex-col gap-4"
 	>
-		<label class="text-sm text-gray-500">
+		<label class="text-sm text-gray-200">
 			Search User by Email
 		</label>
 		<input
