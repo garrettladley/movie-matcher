@@ -16,15 +16,27 @@ import (
 func (s *Service) Status(c *fiber.Ctx) error {
 	rawEmail := c.Query("email")
 
+	if rawEmail == "" {
+		return utilities.Render(
+			c,
+			status.Search(
+				status.SearchParams{
+					Email: rawEmail,
+				},
+				status.SearchErrors{},
+			),
+		)
+	}
+
 	email, err := applicant.ParseNUEmail(rawEmail)
 	if err != nil {
 		return utilities.Render(
 			c,
-			status.Err(
-				status.ErrParams{
+			status.Search(
+				status.SearchParams{
 					Email: rawEmail,
 				},
-				status.ErrErrors{
+				status.SearchErrors{
 					Email: "The email provided is not a valid @northeastern.edu address",
 				},
 			),
@@ -52,6 +64,7 @@ func (s *Service) Status(c *fiber.Ctx) error {
 			return
 		}
 		submissionsCh <- submissions
+		close(submissionsCh)
 	}()
 
 	wg.Add(1)
@@ -63,23 +76,35 @@ func (s *Service) Status(c *fiber.Ctx) error {
 			return
 		}
 		nameCh <- name
+		close(nameCh)
 	}()
 
 	wg.Wait()
-	close(submissionsCh)
-	close(nameCh)
 	close(errCh)
 
 	for err := range errCh {
 		if err != nil {
+			if utilities.IsNotFound(err) {
+				return utilities.Render(
+					c,
+					status.Search(
+						status.SearchParams{
+							Email: rawEmail,
+						},
+						status.SearchErrors{
+							Email: "No data found for the provided email",
+						},
+					),
+				)
+			}
 			slog.Error("status", "err", err)
 			return utilities.Render(
 				c,
-				status.Err(
-					status.ErrParams{
+				status.Search(
+					status.SearchParams{
 						Email: rawEmail,
 					},
-					status.ErrErrors{
+					status.SearchErrors{
 						Email: "Error encountered while trying to fetch data",
 					},
 				),

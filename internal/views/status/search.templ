@@ -1,24 +1,25 @@
 package status
 
 import (
-	"movie-matcher/internal/views/layouts"
 	"movie-matcher/internal/views/backend"
+	"movie-matcher/internal/views/layouts"
 )
 
-type ErrParams struct {
+type SearchParams struct {
+	Heading string
+	Email   string
+}
+
+type SearchErrors struct {
 	Email string
 }
 
-type ErrErrors struct {
-	Email string
-}
-
-templ Err(params ErrParams, errors ErrErrors) {
+templ Search(params SearchParams, errors SearchErrors) {
 	@layouts.Base(true) {
 		<div id="not-found-container" class="flex justify-center items-center h-screen min-h-[650px] w-full">
 			@backend.GlassMorphismListItem() {
 				<h2 class="leading-none text-3xl font-bold text-white dark:text-white pb-2">
-					404 Not Found
+					Search
 				</h2>
 				<div class="flex flex-col gap-4 border-gray-200 border-t dark:border-gray-700 pt-4 pb-4">
 					@UserStatusSearch(params.Email, errors.Email)
