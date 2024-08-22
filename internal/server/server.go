@@ -96,7 +96,7 @@ func setup404View(app *fiber.App, staticPaths map[string]struct{}) {
 		if _, ok := staticPaths[c.OriginalURL()]; ok {
 			return c.Next()
 		}
-		return utilities.Render(c, status.Err(status.ErrParams{}, status.ErrErrors{}))
+		return utilities.Render(c, status.Search(status.SearchParams{}, status.SearchErrors{}))
 	})
 }
 
