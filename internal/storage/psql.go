@@ -102,13 +102,14 @@ func (db *PostgresDB) Status(ctx context.Context, email applicant.NUEmail, limit
         INNER JOIN applicants a ON s.token = a.token
         WHERE a.email = $1
         ORDER BY s.submission_time DESC
-        LIMIT $2
+        LIMIT $2;
     `
 	slog.Info("querying status", "query", query, "email", email, "limit", limit)
 	if err := db.SelectContext(ctx, &submissions, query, email, limit); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, utilities.NotFound("submissions")
 		}
+		slog.Error("error querying status", "error", err)
 		return nil, err
 	}
 
