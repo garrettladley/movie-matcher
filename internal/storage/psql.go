@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log/slog"
 	"time"
 
 	"movie-matcher/internal/algo"
@@ -104,12 +103,10 @@ func (db *PostgresDB) Status(ctx context.Context, email applicant.NUEmail, limit
         ORDER BY s.submission_time DESC
         LIMIT $2;
     `
-	slog.Info("querying status", "query", query, "email", email, "limit", limit)
 	if err := db.SelectContext(ctx, &submissions, query, email, limit); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, utilities.NotFound("submissions")
 		}
-		slog.Error("error querying status", "error", err)
 		return nil, err
 	}
 
