@@ -3,7 +3,7 @@ module movie-matcher
 go 1.22.4
 
 require (
-	github.com/a-h/templ v0.2.771
+	github.com/a-h/templ v0.2.778
 	github.com/alecthomas/kong v0.9.0
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/lib/pq v1.10.9
